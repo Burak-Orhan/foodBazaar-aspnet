@@ -1,0 +1,121 @@
+﻿@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes wiggle {
+    0%, 100% {
+        transform: rotate(-3deg);
+    }
+
+    50% {
+        transform: rotate(3deg);
+    }
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+    .floating:nth-child(2) {
+        animation-delay: -1s;
+    }
+
+    .floating:nth-child(3) {
+        animation-delay: -2s;
+    }
+
+.bouncing {
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.spinning {
+    animation: spin 20s linear infinite;
+}
+
+.wiggling {
+    animation: wiggle 1s ease-in-out infinite;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #e88a3a 0%, #e83a3a 50%, #e88a3a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+
+.plate {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.3);
+}
+
+    .plate::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+
+@keyframes utensil-left {
+    0%, 100% {
+        transform: translateX(0) rotate(-15deg);
+    }
+
+    50% {
+        transform: translateX(-5px) rotate(-20deg);
+    }
+}
+
+@keyframes utensil-right {
+    0%, 100% {
+        transform: translateX(0) rotate(15deg);
+    }
+
+    50% {
+        transform: translateX(5px) rotate(20deg);
+    }
+}
+
+.utensil-left {
+    animation: utensil-left 2s ease-in-out infinite;
+}
+
+.utensil-right {
+    animation: utensil-right 2s ease-in-out infinite;
+}

@@ -17,6 +17,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+//My Added Code
+app.UseStatusCodePagesWithReExecute("/Error/Error", "?statusCode={0}");
 
 app.UseAuthorization();
 

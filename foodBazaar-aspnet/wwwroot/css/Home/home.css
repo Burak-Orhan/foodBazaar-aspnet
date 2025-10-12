@@ -1,0 +1,148 @@
+﻿.hero-bg {
+    background-image: url('/image/hero.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.floating-icon {
+    animation: float 3s ease-in-out infinite;
+}
+
+    .floating-icon:nth-child(2n) {
+        animation-delay: -1s;
+    }
+
+    .floating-icon:nth-child(3n) {
+        animation-delay: -2s;
+    }
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.input-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #FF3B30 0%, #FF6B35 100%);
+}
+
+    .submit-btn:hover {
+        background: linear-gradient(135deg, #E6342A 0%, #E55A2B 100%);
+        transform: scale(1.05);
+    }
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+    .secondary-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+.focus-ring:focus-visible {
+    outline: 1px solid transparent;
+    box-shadow: 0 0 0 3px #bde83a;
+}
+
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+    outline: 1px solid transparent;
+    box-shadow: 0 0 0 3px #bde83a;
+}
+
+.dotted-bg {
+    background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 12px 12px;
+}
+
+.grid-pattern {
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.dropdown-panel {
+    transition: opacity 0.15s ease-in-out;
+}
+
+    .dropdown-panel.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .dropdown-panel.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+.caret {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .caret.rotated {
+        transform: rotate(180deg);
+    }
+
+.drawer {
+    transition: transform 0.3s ease-in-out;
+}
+
+    .drawer.closed {
+        transform: translateX(100%);
+    }
+
+    .drawer.open {
+        transform: translateX(0);
+    }
+
+.overlay {
+    transition: opacity 0.3s ease-in-out;
+}
+
+    .overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+/* Footer link hover effect */
+.footer-link {
+    position: relative;
+    display: inline-block;
+}
+
+    .footer-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: currentColor;
+        transition: width 0.3s ease;
+    }
+
+    .footer-link:hover::after {
+        width: 100%;
+    }
+
+/* Focus ring for social icons */
+.social-icon:focus-visible {
+    outline: 1px solid transparent;
+    box-shadow: 0 0 0 3px #A5C543;
+}

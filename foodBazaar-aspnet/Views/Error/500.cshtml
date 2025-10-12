@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Sayfa Bulunamadı</title>
+
+    <link href="~/css/error/500.css" rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+    <div class="absolute inset-0 bg-gradient-to-br from-[#1B1E24] via-[#252930] to-[#1B1E24]"></div>
+    <!-- animated gradient  -->
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"></div>
+
+    <div class="absolute inset-0 opacity-30" style="background-image: url('image/pattern.svg'); background-repeat: repeat; background-size: 400px 400px;"></div>
+
+    <!-- floating  -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="floating absolute top-10 left-10 text-6xl opacity-20">
+            <i class="fas fa-pizza-slice text-orange-400"></i>
+        </div>
+        <div class="floating absolute top-20 right-20 text-5xl opacity-20">
+            <i class="fas fa-hamburger text-yellow-400"></i>
+        </div>
+        <div class="floating absolute bottom-20 left-20 text-5xl opacity-20">
+            <i class="fas fa-ice-cream text-pink-400"></i>
+        </div>
+        <div class="floating absolute bottom-32 right-32 text-6xl opacity-20">
+            <i class="fas fa-drumstick-bite text-red-400"></i>
+        </div>
+        <div class="floating absolute top-1/2 left-1/4 text-4xl opacity-15">
+            <i class="fas fa-cookie-bite text-amber-400"></i>
+        </div>
+        <div class="floating absolute top-1/3 right-1/4 text-4xl opacity-15">
+            <i class="fas fa-hotdog text-red-400"></i>
+        </div>
+    </div>
+
+    <div class="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="max-w-4xl w-full">
+
+            <div class="flex justify-center mb-8">
+                <div class="relative">
+                    <div class="plate mx-auto">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-6xl md:text-7xl font-black gradient-text wiggling">500</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute -left-16 md:-left-24 top-1/2 transform -translate-y-1/2 utensil-left">
+                        <i class="fas fa-utensil-spoon text-5xl md:text-6xl text-gray-400 opacity-60"></i>
+                    </div>
+
+                    <div class="absolute -right-16 md:-right-24 top-1/2 transform -translate-y-1/2 utensil-right">
+                        <i class="fas fa-utensils text-5xl md:text-6xl text-gray-400 opacity-60"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-6xl font-black text-white mb-4">
+                    Aradığınız Lezzet Bulunamadı!
+                </h1>
+                <p class="text-base md:text-lg text-gray-500 max-w-2xl mx-auto">
+                    Aradığınız sayfa taşınmış, silinmiş veya hiç var olmamış olabilir.
+                    Ama endişelenmeyin, size lezzetli alternatifler sunabiliriz!
+                </p>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 text-center">
+                <p class="text-gray-400 text-sm">
+                    © 2025 FoodBazaar. Tüm hakları saklıdır.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
