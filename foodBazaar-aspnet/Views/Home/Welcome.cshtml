@@ -1,0 +1,7 @@
+﻿@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <p>Welcome to Food Bazaar! </p> @User.FindFirst("FullName")?.Value
+    <p>Email: <strong>@(User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "boş")</strong></p>
+    <p>Rol: <strong>@(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "boş")</strong></p>
+
+}

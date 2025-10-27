@@ -1,510 +1,908 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@* @model List<foodBazaar_aspnet.Models.Users>
+@foreach (var u in Model)
+{
+    <tr>
+        <td>@u.Id</td>
+        <td>@u.Name</td>
+        <td>@u.Surname</td>
+        <td>@u.Email</td>
+        <td>@u.Password</td>
+    </tr>
+} *@
+
+<!DOCTYPE html>
+<html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOOD BAZAAR</title>
-
-    <link rel="stylesheet" href="~/css/home/home.css">
+    <title>FoodBazaar - Lezzet Kapınızda</title>
+    <meta name="description"
+          content="FoodBazaar ile en sevdiğiniz restoranlardan hızlı ve güvenli sipariş verin. İlk siparişe özel 150TL kupon!">
+    
+    <link href="~/css/Home/home.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-b from-black via-gray-900 to-[#1B1E24] text-white">
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out" id="navbar">
+
+<body class="bg-gradient-to-b from-black via-gray-900 to-[#1B1E24] text-white overflow-x-hidden">
+
+    <!-- Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
         <div class="w-full px-4 sm:px-6 lg:px-8 pt-4">
-            <div class=" relative max-w-6xl mx-auto bg-white/10 backdrop-blur-sm border border-white/15 rounded-[24px] md:rounded-[28px] overflow-visible" style="box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 10px 40px -10px rgba(0,0,0,.45);">
-                <div class="nav-shell relative">
-                    <nav class="flex items-center justify-between px-6 py-4">
-                        <div class="flex items-center">
-                            <span class="text-xl font-semibold text-white">FoodBazaar</span>
+            <div class="relative max-w-7xl mx-auto glass-effect rounded-[28px] overflow-visible">
+                <nav class="relative flex items-center justify-between px-6 py-4">
+                    <!-- Logo -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-10 h-10 bg-gradient-to-br from-[#bde83a] to-[#a5c543] rounded-xl flex items-center justify-center">
+                            <i class="fas fa-utensils text-black text-lg"></i>
                         </div>
-                        <div class="hidden md:flex items-center space-x-8">
+                        <span class="text-2xl font-bold gradient-text">FoodBazaar</span>
+                    </div>
+
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="#services"
+                           class="text-white hover:text-[#bde83a] transition-colors focus-ring rounded-lg px-3 py-2 font-medium">Hizmetler</a>
+                        <a href="#features"
+                           class="text-white hover:text-[#bde83a] transition-colors focus-ring rounded-lg px-3 py-2 font-medium">Özellikler</a>
+                        <a href="#about"
+                           class="text-white hover:text-[#bde83a] transition-colors focus-ring rounded-lg px-3 py-2 font-medium">Hakkımızda</a>
+                        <a href="#contact"
+                           class="text-white hover:text-[#bde83a] transition-colors focus-ring rounded-lg px-3 py-2 font-medium">İletişim</a>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex items-center space-x-4">
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <button onclick="window.location.href='/User'"
+                                    class="hidden sm:block px-6 py-2.5 rounded-xl bg-white/10 hover:bg-[#bde83a]/20 border border-white/20 hover:border-[#bde83a]/40 text-white font-medium transition-all focus-ring">
+                                Restorana Git
+                            </button>
+
                             <div class="relative">
-                                <button id="product-trigger"
-                                        class="flex items-center space-x-1 text-white/80 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2"
-                                        aria-haspopup="menu"
-                                        aria-expanded="false">
-                                    <span>Hizmetler</span>
-                                    <svg class="w-4 h-4 caret" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                <button id="account-trigger"
+                                        class="w-10 h-10 bg-white/20 hover:bg-white/30 text-white/80 hover:text-white rounded-full flex items-center justify-center transition-all focus-ring"
+                                        aria-label="User account" aria-haspopup="menu" aria-expanded="false">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                        </path>
                                     </svg>
                                 </button>
                             </div>
 
                             <div class="relative">
-                                <button id="company-trigger"
-                                        class="flex items-center space-x-1 text-white/80 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2"
-                                        aria-haspopup="menu"
-                                        aria-expanded="false">
-                                    <span>Şirket</span>
-                                    <svg class="w-4 h-4 caret" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                <button id="account-trigger" onclick="window.location.href='/Auth/Logout'"
+                                        class="w-10 h-10 bg-white/20 hover:bg-white/30 text-white/80 hover:text-white rounded-full flex items-center justify-center transition-all focus-ring"
+                                        aria-label="User account" aria-haspopup="menu" aria-expanded="false">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
                                     </svg>
                                 </button>
                             </div>
-
-                            <a href="#" class="text-white/80 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2">Fiyatlar</a>
-                        </div>
-
-                        <div class="flex items-center space-x-4">
-                            <button class="w-10 h-10 bg-white/20 hover:bg-white/30 text-white/80 hover:text-white rounded-full flex items-center justify-center transition-all focus-ring" aria-label="User account">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
+                        } 
+                        else
+                        {
+                            <button onclick="openLoginModal()"
+                                    class="hidden sm:block px-6 py-2.5 rounded-xl bg-white/10 hover:bg-[#bde83a]/20 border border-white/20 hover:border-[#bde83a]/40 text-white font-medium transition-all focus-ring">
+                                Giriş Yap
                             </button>
-
-                            <button id="mobile-menu-trigger"
-                                    class="md:hidden text-white/80 hover:text-white focus-ring rounded-lg p-2"
-                                    aria-label="Open mobile menu">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                                </svg>
+                            <button onclick="openRegisterModal()"
+                                    class="px-6 py-2.5 rounded-xl bg-[#bde83a] hover:bg-[#a5c543] text-black font-bold transition-all shine-button focus-ring shadow-lg shadow-[#bde83a]/30">
+                                Kayıt Ol
                             </button>
-                        </div>
-                    </nav>
-                </div>
-            </div>
-        </div>
+                            <button id="mobile-menu-btn"
+                                    class="md:hidden text-white hover:text-[#bde83a] focus-ring rounded-lg p-2">
+                                <i class="fas fa-bars text-xl"></i>
+                            </button>
+                        }
 
-        <div id="product-dropdown"
-             class="absolute left-4 right-4 top-full mt-1 sm:left-6 sm:right-6 lg:left-8 lg:right-8 top-[88px] max-w-6xl mx-auto bg-white/30 backdrop-blur-[20px] border border-white/20 rounded-[20px] z-50 hidden shadow-xl"
-             role="menu">
-            <div class="p-4">
-                <div class="grid grid-cols-[1fr_0.32fr] gap-4">
-                    <div class="grid grid-cols-3 gap-4 border-r border-gray-700 pr-4">
-                        <div class="group p-4 bg-white-100/10  input-shadow rounded-lg transition-colors grid-pattern focus-ring" tabindex="0" role="menuitem">
-                            <div class="flex flex-col space-y-3">
-                                <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-white group-hover:text-gray-100">Restoran</h3>
-                                    <p class="text-sm text-gray-400 mt-1">Burayı unutma</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="group p-4 bg-white-100/10 input-shadow rounded-lg hover:border-gray-600 transition-colors grid-pattern focus-ring" tabindex="0" role="menuitem">
-                            <div class="flex flex-col space-y-3">
-                                <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-white group-hover:text-gray-100">Gel Al</h3>
-                                    <p class="text-sm text-gray-400 mt-1">Burayıda unutma</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="group p-4 bg-white-100/100 input-shadow rounded-lg hover:border-gray-600 transition-colors grid-pattern focus-ring" tabindex="0" role="menuitem">
-                            <div class="flex flex-col space-y-3">
-                                <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-white group-hover:text-gray-100">Market</h3>
-                                    <p class="text-sm text-gray-400 mt-1">Burayı unutmaa</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-
-                    <div class="pl-4">
-                        <ul class="space-y-2" role="none">
-                            <li>
-                                <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2" role="menuitem">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    <span>Forum</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2" role="menuitem">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
-                                    </svg>
-                                    <span>Kurallar</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2" role="menuitem">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                    <span>Komisyon hesapla</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2" role="menuitem">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                    </svg>
-                                    <span>Security</span>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="company-dropdown"
-             class="absolute left-4 right-4 top-full mt-1 sm:left-6 sm:right-6 lg:left-8 lg:right-8 top-[88px] max-w-6xl mx-auto bg-white/30 backdrop-blur-[20px] border border-white/20 rounded-[20px] z-50 hidden shadow-xl"
-             role="menu">
-            <div class="p-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="group p-4 bg-white-100/10 input-shadow rounded-lg  transition-colors grid-pattern focus-ring" tabindex="0" role="menuitem">
-                        <div class="flex flex-col space-y-3">
-                            <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-white group-hover:text-gray-100">Hakkımızda</h3>
-                                <p class="text-sm text-gray-400 mt-1">FoodBazaar’ın hikayesini ve değerlerini keşfet</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="group p-4 bg-white-100/10 input-shadow rounded-lg transition-colors grid-pattern focus-ring" tabindex="0" role="menuitem">
-                        <div class="flex flex-col space-y-3">
-                            <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-white group-hover:text-gray-100">Kariyer</h3>
-                                <p class="text-sm text-gray-400 mt-1">FoodBazaar ekibinde yerini al!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </nav>
             </div>
         </div>
     </header>
 
-    <div id="mobile-overlay"
-         class="fixed inset-0 bg-black/50 z-40 overlay hidden"></div>
-
-    <div id="mobile-drawer"
-         class="fixed top-0 right-0 h-full w-80 bg-[#1B1E24] border-l border-gray-700 z-50 drawer closed">
-        <div class="flex flex-col h-full">
-            <div class="flex items-center justify-between p-6 border-b border-gray-700">
-                <span class="text-xl font-bold text-white">Menu</span>
-                <button id="mobile-close-btn"
-                        class="text-gray-400 hover:text-white focus-ring rounded-lg p-2"
-                        aria-label="Close mobile menu">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu"
+         class="mobile-menu fixed top-0 right-0 h-full w-80 bg-[#1B1E24] border-l border-white/10 z-50 p-6">
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-xl font-bold gradient-text">Menu</span>
+            <button id="mobile-menu-close" class="text-white/80 hover:text-white">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+        </div>
+        <nav class="space-y-4">
+            <a href="#services"
+               class="block text-white/80 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Hizmetler</a>
+            <a href="#features"
+               class="block text-white/80 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Özellikler</a>
+            <a href="#about"
+               class="block text-white/80 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">Hakkımızda</a>
+            <a href="#contact"
+               class="block text-white/80 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-all">İletişim</a>
+            <div class="pt-4 border-t border-white/10">
+                <button onclick="openLoginModal()"
+                        class="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all mb-3">
+                    Giriş Yap
+                </button>
+                <button onclick="openRegisterModal()"
+                        class="w-full py-3 px-4 rounded-xl bg-[#bde83a] hover:bg-[#a5c543] text-black font-semibold transition-all">
+                    Kayıt Ol
                 </button>
             </div>
-
-            <div class="flex-1 overflow-y-auto p-6">
-                <nav class="space-y-4">
-                    <div class="border-b border-gray-700 pb-4">
-                        <button id="mobile-product-trigger"
-                                class="flex items-center justify-between w-full text-left text-white font-medium focus-ring rounded-lg px-3 py-2"
-                                aria-expanded="false">
-                            <span>Hizmetler</span>
-                            <svg class="w-4 h-4 caret" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div id="mobile-product-content" class="hidden mt-3 ml-4 space-y-3">
-                            <a href="#" class="block text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2">Restoran</a>
-                            <a href="#" class="block text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2">Gel Al</a>
-                            <a href="#" class="block text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2">Market</a>
-                        </div>
-                    </div>
-
-                    <div class="border-b border-gray-700 pb-4">
-                        <button id="mobile-company-trigger"
-                                class="flex items-center justify-between w-full text-left text-white font-medium focus-ring rounded-lg px-3 py-2"
-                                aria-expanded="false">
-                            <span>Şirket</span>
-                            <svg class="w-4 h-4 caret" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div id="mobile-company-content" class="hidden mt-3 ml-4 space-y-3">
-                            <a href="#" class="block text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2">Hakkımızda</a>
-                            <a href="#" class="block text-gray-300 hover:text-white transition-colors focus-ring rounded-lg px-3 py-2">Kariyer</a>
-                        </div>
-                    </div>
-
-                    <a href="#" class="block text-white font-medium focus-ring rounded-lg px-3 py-2">Fiyat</a>
-                </nav>
-            </div>
-
-
-        </div>
+        </nav>
     </div>
 
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- Hero Section -->
     <section class="hero-bg min-h-screen relative overflow-hidden">
-        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
 
-        <div class="absolute inset-0 pointer-events-none">
-            <div class="floating-icon absolute top-20 left-16 text-white text-4xl opacity-80">
-                <i class="fas fa-utensils"></i>
-            </div>
-
-            <div class="floating-icon absolute top-32 right-20 text-white text-3xl opacity-70">
+        <!-- Floating Food Icons -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="floating-icon absolute top-20 left-[10%] text-white/20 text-6xl">
                 <i class="fas fa-pizza-slice"></i>
             </div>
-
-            <div class="floating-icon absolute top-1/2 left-8 text-white text-3xl opacity-75">
-                <i class="fas fa-coffee"></i>
-            </div>
-
-            <div class="floating-icon absolute top-1/2 right-12 text-white text-3xl opacity-80">
+            <div class="floating-icon absolute top-40 right-[15%] text-white/20 text-5xl">
                 <i class="fas fa-hamburger"></i>
             </div>
-
-            <div class="floating-icon absolute bottom-32 left-24 text-white text-3xl opacity-70">
+            <div class="floating-icon absolute top-[60%] left-[5%] text-white/20 text-5xl">
+                <i class="fas fa-coffee"></i>
+            </div>
+            <div class="floating-icon absolute bottom-40 right-[10%] text-white/20 text-6xl">
                 <i class="fas fa-ice-cream"></i>
             </div>
-
-            <div class="floating-icon absolute bottom-40 right-16 text-white text-3xl opacity-75">
-                <i class="fas fa-apple-alt"></i>
-            </div>
-
-            <div class="floating-icon absolute top-1/4 left-1/4 text-white text-2xl opacity-60">
+            <div class="floating-icon absolute top-[30%] right-[5%] text-white/20 text-4xl">
                 <i class="fas fa-cookie-bite"></i>
             </div>
-
-            <div class="floating-icon absolute top-3/4 right-1/4 text-white text-2xl opacity-65">
-                <i class="fas fa-candy-cane"></i>
+            <div class="floating-icon absolute bottom-[30%] left-[15%] text-white/20 text-4xl">
+                <i class="fas fa-apple-alt"></i>
             </div>
         </div>
 
-        <div class="relative z-10 flex items-center justify-center min-h-screen px-4">
-            <div class="text-center max-w-2xl mx-auto">
-                <h1 class="text-5xl md:text-7xl font-black text-white mb-8 leading-tight tracking-tight">
-                    İLK SİPARİŞE ÖZEL<br>
-                    <span class="text-4xl md:text-6xl">150TL KUPON</span>
+        <!-- Hero Content -->
+        <div class="relative z-10 flex items-center justify-center min-h-screen px-4 pt-20">
+            <div class="text-center max-w-4xl mx-auto">
+                <!-- Main Heading -->
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
+                    Lezzet
+                    <span class="gradient-text block">Kapınızda</span>
                 </h1>
 
-                <div class="bg-white rounded-2xl p-2 input-shadow mb-6 max-w-lg mx-auto">
-                    <div class="flex items-center">
-                        <div class="flex items-center justify-center w-12 h-12 text-gray-500">
-                            <i class="fas fa-map-marker-alt text-xl"></i>
+                <!-- Subheading -->
+                <p class="text-xl md:text-2xl text-white/80 mb-12 max-w-2xl mx-auto">
+                    Binlerce restorandan dilediğiniz yemeği, hızlı ve güvenli bir şekilde kapınıza getiriyoruz
+                </p>
+
+                <!-- Search Bar -->
+                <div class="max-w-2xl mx-auto mb-8">
+                    <div class="glass-effect rounded-2xl p-2 flex items-center gap-2">
+                        <div class="flex items-center pl-4">
+                            <i class="fas fa-map-marker-alt text-[#bde83a] text-xl"></i>
                         </div>
-
-                        <input type="text"
-                               placeholder="Yemek, mutfak veya restoran arayın"
-                               class="flex-1 px-4 py-3 text-gray-900 placeholder-gray-500 bg-transparent border-none outline-none text-lg" />
-
-                        <button class="submit-btn w-12 h-12 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:shadow-lg">
-                            <i class="fas fa-arrow-right text-lg"></i>
+                        <input type="text" placeholder="Adresinizi veya restoran adını girin..."
+                               class="flex-1 px-4 py-4 bg-transparent text-white placeholder-white/50 outline-none text-lg" />
+                        <button class="px-8 py-4 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button">
+                            <i class="fas fa-search mr-2"></i>
+                            Ara
                         </button>
                     </div>
                 </div>
 
-                <button onclick="window.location.href='@Url.Action("Register", "Auth")'" class="secondary-btn text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center mx-auto space-x-2">
-                    <i class="fas fa-user text-sm"></i>
-                    <span>Ücretsiz teslimat için kaydolun </span>
-                </button>
+                <!-- Promo Badge -->
+                <div class="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-[#bde83a]/20 border border-[#bde83a]/30 pulse-animation">
+                    <i class="fas fa-fire text-[#bde83a] text-lg"></i>
+                    <span class="text-[#bde83a] font-bold text-base md:text-lg">İlk Siparişe Özel 150TL Kupon!</span>
+                </div>
+
+                <!-- Scroll Indicator -->
+                <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <i class="fas fa-chevron-down text-white/50 text-2xl"></i>
+                </div>
             </div>
         </div>
     </section>
 
-    <div class="relative overflow-hidden">
-        <!-- gradient background -->
+    <!-- Services Section -->
+    <section id="services" class="relative py-20 md:py-32 overflow-hidden">
+        <!-- Background -->
+        <div class="absolute inset-0 bg-gradient-to-b from-[#1B1E24] via-[#252930] to-[#1B1E24]"></div>
+        <div class="absolute inset-0 grid-pattern opacity-30"></div>
+
+        <!-- Animated blobs -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#bde83a]/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FF3B30]/10 rounded-full blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
+                    Nasıl <span class="gradient-text">Çalışır?</span>
+                </h2>
+                <p class="text-xl text-white/70 max-w-2xl mx-auto">
+                    Üç basit adımda lezzetli yemekler kapınızda
+                </p>
+            </div>
+
+            <!-- Service Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <!-- Card 1 -->
+                <div class="glass-card card-3d p-8 scroll-reveal" style="animation-delay: 0.1s">
+                    <div class="card-inner">
+                        <div class="relative mb-6">
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-[#bde83a] to-[#a5c543] rounded-2xl flex items-center justify-center feature-icon">
+                                <i class="fas fa-search text-black text-3xl"></i>
+                            </div>
+                            <div class="absolute -top-2 -right-2 w-8 h-8 bg-[#FF3B30] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                1
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4 text-center">Restoran Seç</h3>
+                        <p class="text-white/70 text-center leading-relaxed">
+                            Binlerce restoran arasından favorilerinizi keşfedin. Mutfak türü, fiyat ve puanlara göre
+                            filtreleyin.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card card-3d p-8 scroll-reveal" style="animation-delay: 0.2s">
+                    <div class="card-inner">
+                        <div class="relative mb-6">
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-[#bde83a] to-[#a5c543] rounded-2xl flex items-center justify-center feature-icon">
+                                <i class="fas fa-shopping-cart text-black text-3xl"></i>
+                            </div>
+                            <div class="absolute -top-2 -right-2 w-8 h-8 bg-[#FF3B30] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                2
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4 text-center">Sipariş Ver</h3>
+                        <p class="text-white/70 text-center leading-relaxed">
+                            Menüden istediğiniz yemekleri seçin, özelleştirin ve güvenli ödeme ile siparişinizi
+                            tamamlayın.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card card-3d p-8 scroll-reveal" style="animation-delay: 0.3s">
+                    <div class="card-inner">
+                        <div class="relative mb-6">
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-[#bde83a] to-[#a5c543] rounded-2xl flex items-center justify-center feature-icon">
+                                <i class="fas fa-motorcycle text-black text-3xl"></i>
+                            </div>
+                            <div class="absolute -top-2 -right-2 w-8 h-8 bg-[#FF3B30] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                3
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4 text-center">Kapıda Teslim</h3>
+                        <p class="text-white/70 text-center leading-relaxed">
+                            Siparişinizi gerçek zamanlı takip edin. Sıcak ve taze olarak kapınıza teslim edelim.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="relative py-20 md:py-32 overflow-hidden">
+        <!-- Background -->
+        <div class="absolute inset-0 bg-gradient-to-b from-[#1B1E24] to-black"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
+                    Neden <span class="gradient-text">FoodBazaar?</span>
+                </h2>
+                <p class="text-xl text-white/70 max-w-2xl mx-auto">
+                    Yemek siparişinde yeni bir deneyim
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="glass-card p-6 scroll-reveal" style="animation-delay: 0.1s">
+                    <div class="w-14 h-14 bg-gradient-to-br from-[#bde83a]/20 to-[#a5c543]/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-bolt text-[#bde83a] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Hızlı Teslimat</h3>
+                    <p class="text-white/70">Ortalama 30 dakikada siparişiniz kapınızda</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="glass-card p-6 scroll-reveal" style="animation-delay: 0.2s">
+                    <div class="w-14 h-14 bg-gradient-to-br from-[#bde83a]/20 to-[#a5c543]/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-[#bde83a] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Güvenli Ödeme</h3>
+                    <p class="text-white/70">SSL sertifikalı güvenli ödeme altyapısı</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="glass-card p-6 scroll-reveal" style="animation-delay: 0.3s">
+                    <div class="w-14 h-14 bg-gradient-to-br from-[#bde83a]/20 to-[#a5c543]/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-star text-[#bde83a] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Kaliteli Restoranlar</h3>
+                    <p class="text-white/70">Sadece onaylı ve kaliteli restoranlar</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="glass-card p-6 scroll-reveal" style="animation-delay: 0.4s">
+                    <div class="w-14 h-14 bg-gradient-to-br from-[#bde83a]/20 to-[#a5c543]/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-headset text-[#bde83a] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">7/24 Destek</h3>
+                    <p class="text-white/70">Her zaman yanınızdayız, canlı destek</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="glass-card p-6 scroll-reveal" style="animation-delay: 0.5s">
+                    <div class="w-14 h-14 bg-gradient-to-br from-[#bde83a]/20 to-[#a5c543]/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-gift text-[#bde83a] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Kampanyalar</h3>
+                    <p class="text-white/70">Sürekli yeni kampanyalar ve indirimler</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="glass-card p-6 scroll-reveal" style="animation-delay: 0.6s">
+                    <div class="w-14 h-14 bg-gradient-to-br from-[#bde83a]/20 to-[#a5c543]/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-map-marked-alt text-[#bde83a] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Canlı Takip</h3>
+                    <p class="text-white/70">Siparişinizi anlık olarak takip edin</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partner Section -->
+    <section id="about" class="relative py-20 md:py-32 overflow-hidden">
+        <!-- Background -->
         <div class="absolute inset-0 bg-gradient-to-br from-[#1B1E24] via-[#252930] to-[#1B1E24]"></div>
+        <div class="absolute inset-0 gradient-overlay"></div>
 
-        <!-- animated gradient  -->
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
+                    Bize <span class="gradient-text">Katılın</span>
+                </h2>
+                <p class="text-xl text-white/70 max-w-2xl mx-auto">
+                    FoodBazaar ailesinin bir parçası olun ve kazanmaya başlayın
+                </p>
+            </div>
 
-        <div class="absolute inset-0 opacity-30" style="background-image: url('image/pattern.svg'); background-repeat: repeat; background-size: 400px 400px;"></div>
+            <!-- Partner Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <!-- Driver Card -->
+                <div class="glass-card p-8 scroll-reveal group" style="animation-delay: 0.1s">
+                    <div class="mb-6 flex justify-center">
+                        <img src="image/motor4.png" alt="Sürücü ol"
+                             class="w-48 h-48 object-contain transform group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
+                        Sürücü Ol
+                    </h3>
+                    <p class="text-white/70 mb-6 leading-relaxed text-center">
+                        Teslimat sürücüsü olarak para kazanın ve programınızı kendiniz belirleyin. Kayıt olmak birkaç
+                        dakika sürer.
+                    </p>
+                    <a href="#"
+                       class="inline-flex items-center justify-center w-full px-6 py-3 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button group">
+                        Kazanmaya Başla
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
 
-        <section class="relative py-20 md:py-32">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Restaurant Card -->
+                <div class="glass-card p-8 scroll-reveal group" style="animation-delay: 0.2s">
+                    <div class="mb-6 flex justify-center">
+                        <img src="image/shop.png" alt="İşletme ortağı ol"
+                             class="w-48 h-48 object-contain transform group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
+                        İşletme Ortağı Ol
+                    </h3>
+                    <p class="text-white/70 mb-6 leading-relaxed text-center">
+                        Yeni müşteriler kazanın ve satışlarınızı artırın. İlk 30 gün boyunca %0 komisyon fırsatından
+                        yararlanın.
+                    </p>
+                    <a href="#"
+                       class="inline-flex items-center justify-center w-full px-6 py-3 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button group">
+                        FoodBazaar'a Katıl
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative z-10">
+                <!-- App Card
+                <div class="glass-card p-8 scroll-reveal group" style="animation-delay: 0.3s">
+                    <div class="mb-6 flex justify-center">
+                        <img src="image/phone.png" alt="Mobil uygulama"
+                            class="w-48 h-48 object-contain transform group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
+                        En İyi Deneyimi Yaşa
+                    </h3>
+                    <p class="text-white/70 mb-6 leading-relaxed text-center">
+                        Mahallendeki en iyi lezzetleri keşfedin ve hepsine tek bir uygulamadan kolayca ulaşın.
+                    </p>
+                    <a href="#"
+                        class="inline-flex items-center justify-center w-full px-6 py-3 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button group">
+                        Uygulamayı İndir
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div> -->
+            </div>
+        </div>
+    </section>
 
-                    <!-- sürücü ol -->
-                    <div class="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                        <div class="mb-6 flex justify-center">
-                            <img src="image/motor4.png"
-                                 alt="Teslimat sürücüsü motosikletle sipariş teslim ediyor"
-                                 class="w-48 h-48 md:w-56 md:h-56 object-contain" />
-                        </div>
-                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
-                            Sürücü Ol
+    <!-- App Download Section -->
+    <section class="relative py-30 md:py-32 overflow-hidden">
+        <!-- Background -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black to-[#1B1E24]"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-effect rounded-3xl p-8 md:p-12 lg:p-16 overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Left Content -->
+                    <div class="scroll-reveal">
+                        <!-- <div
+                            class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-[#bde83a]/20 border border-[#bde83a]/30 mb-6">
+                            <i class="fas fa-mobile-alt text-[#bde83a]"></i>
+                            <span class="text-[#bde83a] font-semibold text-sm">Mobil Uygulama</span>
+                        </div> -->
+
+                        <h2 class="text-4xl md:text-5xl font-black text-white mb-6">
+                            Uygulamayı İndirin,
+                            <span class="gradient-text block">Avantajları Yakalayın</span>
                         </h2>
-                        <p class="text-base md:text-lg text-white/70 mb-6 leading-relaxed text-center">
-                            Teslimat sürücüsü olarak para kazanın ve programınızı kendiniz belirleyin. Kayıt olmak sadece birkaç dakika sürer.
+
+                        <p class="text-xl text-white/70 mb-8">
+                            Mobil uygulamamızla daha hızlı sipariş verin, özel kampanyalardan yararlanın ve puanlarınızı
+                            takip edin.
                         </p>
-                        <a href="#"
-                           class="inline-flex items-center justify-center w-full text-[#FF3B30] hover:text-[#E6342A] font-semibold text-lg transition-colors focus-ring rounded-lg px-2 py-1"
-                           aria-label="Sürücü olarak kazanmaya başlayın">
-                            Kazanmaya başla
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </a>
+
+                        <!-- Features List -->
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-[#bde83a]/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check text-[#bde83a]"></i>
+                                </div>
+                                <span class="text-white/80">Özel mobil kampanyalar</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-[#bde83a]/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check text-[#bde83a]"></i>
+                                </div>
+                                <span class="text-white/80">Hızlı ve kolay sipariş</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-[#bde83a]/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check text-[#bde83a]"></i>
+                                </div>
+                                <span class="text-white/80">Canlı sipariş takibi</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-[#bde83a]/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check text-[#bde83a]"></i>
+                                </div>
+                                <span class="text-white/80">Puan kazanma sistemi</span>
+                            </div>
+                        </div>
+
+                        <!-- App Store Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="#"
+                               class="app-store-btn inline-flex items-center justify-center px-6 py-3 bg-black rounded-xl border border-white/20 hover:border-white/40 transition-all">
+                                <i class="fab fa-apple text-white text-3xl mr-3"></i>
+                                <div class="text-left">
+                                    <div class="text-xs text-white/60">Download on the</div>
+                                    <div class="text-lg font-semibold text-white">App Store</div>
+                                </div>
+                            </a>
+                            <a href="#"
+                               class="app-store-btn inline-flex items-center justify-center px-6 py-3 bg-black rounded-xl border border-white/20 hover:border-white/40 transition-all">
+                                <i class="fab fa-google-play text-white text-3xl mr-3"></i>
+                                <div class="text-left">
+                                    <div class="text-xs text-white/60">GET IT ON</div>
+                                    <div class="text-lg font-semibold text-white">Google Play</div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
 
-                    <!-- işletme ortağı ol -->
-                    <div class="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                        <div class="mb-6 flex justify-center">
-                            <img src="image/shop.png"
-                                 alt="İşletme sahibi restoranında müşterilere hizmet veriyor"
-                                 class="w-48 h-48 md:w-56 md:h-56 object-contain" />
+                    <!-- Right Image -->
+                    <div class="relative scroll-reveal" style="animation-delay: 0.2s">
+                        <div class="relative z-10">
+                            <img src="image/phone.png" alt="FoodBazaar Mobile App"
+                                 class="w-full max-w-md mx-auto drop-shadow-2xl" />
                         </div>
-                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
-                            İşletme Ortağı Ol
-                        </h2>
-                        <p class="text-base md:text-lg text-white/70 mb-6 leading-relaxed text-center">
-                            Yeni müşteriler kazanın ve satışlarınızı artırın. İlk 30 gün boyunca %0 komisyon fırsatından yararlanın.
-                        </p>
-                        <a href="#"
-                           class="inline-flex items-center justify-center w-full text-[#FF3B30] hover:text-[#E6342A] font-semibold text-lg transition-colors focus-ring rounded-lg px-2 py-1"
-                           aria-label="İşletme ortağı olarak FoodBazaar'a katılın">
-                            FoodBazaar'a katıl
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </a>
+                        <!-- Decorative elements -->
+                        <div class="absolute top-1/4 -right-10 w-40 h-40 bg-[#bde83a]/20 rounded-full blur-3xl"></div>
+                        <div class="absolute bottom-1/4 -left-10 w-40 h-40 bg-[#FF3B30]/20 rounded-full blur-3xl"></div>
                     </div>
-
-                    <!-- en iyi deneyim  -->
-                    <div class="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                        <div class="mb-6 flex justify-center">
-                            <img src="image/phone.png"
-                                 alt="Mobil uygulama ekranında yemek siparişi veriliyor"
-                                 class="w-48 h-48 md:w-56 md:h-56 object-contain" />
-                        </div>
-                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
-                            En İyi Deneyimi Yaşa
-                        </h2>
-                        <p class="text-base md:text-lg text-white/70 mb-6 leading-relaxed text-center">
-                            Mahallendeki en iyi lezzetleri keşfedin ve hepsine tek bir uygulamadan kolayca ulaşın.
-                        </p>
-                        <a href="#"
-                           class="inline-flex items-center justify-center w-full text-[#FF3B30] hover:text-[#E6342A] font-semibold text-lg transition-colors focus-ring rounded-lg px-2 py-1"
-                           aria-label="FoodBazaar uygulamasını indirin">
-                            Uygulamayı indir
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </a>
-                    </div>
-
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <footer class="relative w-full px-4 sm:px-6 lg:px-8 pb-8 pt-20">
-            <div class="max-w-7xl mx-auto relative z-10">
-                <!-- glass container -->
-                <div class="relative bg-white/10 backdrop-blur-sm border border-white/15 rounded-[24px] md:rounded-[28px] px-8 md:px-12 py-8 md:py-10 overflow-visible" style="box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 10px 40px -10px rgba(0,0,0,.45);">
+    <!-- Footer -->
+    <footer id="contact" class="relative py-35">
+        <!-- Background -->
+        <div class="absolute inset-0 bg-gradient-to-b from-[#1B1E24] to-black"></div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-x-10 lg:gap-y-8">
-
-                        <!-- Şirket -->
-                        <div class="lg:col-span-3">
-                            <h4 class="text-sm uppercase font-semibold text-white/80 mb-4 tracking-wider">Şirket</h4>
-                            <ul class="space-y-3">
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Hakkımızda</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Kariyer</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Blog</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Basın Kiti</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Destek -->
-                        <div class="lg:col-span-3">
-                            <h4 class="text-sm uppercase font-semibold text-white/80 mb-4 tracking-wider">Destek</h4>
-                            <ul class="space-y-3">
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Yardım Merkezi</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">İletişim</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">SSS</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Canlı Destek</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Yasal -->
-                        <div class="lg:col-span-3">
-                            <h4 class="text-sm uppercase font-semibold text-white/80 mb-4 tracking-wider">Yasal</h4>
-                            <ul class="space-y-3">
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Gizlilik Politikası</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Kullanım Şartları</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">Çerez Politikası</a></li>
-                                <li><a href="#" class="footer-link text-white/70 hover:text-white text-sm transition-colors">KVKK</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- tava - sadece desktop -->
-                        <div class="hidden lg:block lg:col-span-3 relative overflow-visible min-h-[200px]">
-                            <img src="image/pan1.png"
-                                 alt="Tavası ve malzemeler illüstrasyonu"
-                                 class="absolute right-[-30%] bottom-[-20%] object-contain z-10 select-none pointer-events-none"
-                                 style="width: 650px !important; max-width: none !important; filter: drop-shadow(0 25px 40px rgba(0,0,0,.45)); transform: rotate(72deg);"
-                                 loading="lazy"
-                                 decoding="async" />
-                        </div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-effect rounded-3xl p-8 md:p-12">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                    <!-- Company -->
+                    <div>
+                        <h4 class="text-lg font-bold text-white mb-4">Şirket</h4>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">Hakkımızda</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">Kariyer</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">Blog</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">Basın</a>
+                            </li>
+                        </ul>
                     </div>
 
-                    <!-- gradient divider -->
-                    <div class="h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent my-8"></div>
-
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-
-                        <p class="text-sm text-white/70">© 2025 FoodBazaar. Tüm hakları saklıdır.</p>
-
-                        <!-- social icons  -->
-                        <div class="flex items-center gap-3">
-                            <a href="#"
-                               class="social-icon w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/25 backdrop-blur-md text-white/80 hover:text-white transition-all"
-                               aria-label="Instagram"
-                               target="_blank"
-                               rel="noopener noreferrer">
-                                <i class="fab fa-instagram text-base"></i>
-                            </a>
-                            <a href="#"
-                               class="social-icon w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/25 backdrop-blur-md text-white/80 hover:text-white transition-all"
-                               aria-label="Youtube"
-                               target="_blank"
-                               rel="noopener noreferrer">
-                                <i class="fab fa-youtube text-base"></i>
-                            </a>
-                            <a href="#"
-                               class="social-icon w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/25 backdrop-blur-md text-white/80 hover:text-white transition-all"
-                               aria-label="Facebook"
-                               target="_blank"
-                               rel="noopener noreferrer">
-                                <i class="fab fa-facebook-f text-base"></i>
-                            </a>
-                            <a href="#"
-                               class="social-icon w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/10 border border-white/15 hover:bg-white/15 hover:border-white/25 backdrop-blur-md text-white/80 hover:text-white transition-all"
-                               aria-label="LinkedIn"
-                               target="_blank"
-                               rel="noopener noreferrer">
-                                <i class="fab fa-linkedin-in text-base"></i>
-                            </a>
-                        </div>
+                    <!-- Support -->
+                    <div>
+                        <h4 class="text-lg font-bold text-white mb-4">Destek</h4>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#" class="footer-link text-white/70 hover:text-white transition-colors">
+                                    Yardım
+                                    Merkezi
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">İletişim</a>
+                            </li>
+                            <li>
+                                <a href="#" class="footer-link text-white/70 hover:text-white transition-colors">SSS</a>
+                            </li>
+                            <li>
+                                <a href="#" class="footer-link text-white/70 hover:text-white transition-colors">
+                                    Canlı
+                                    Destek
+                                </a>
+                            </li>
+                        </ul>
                     </div>
 
+                    <!-- Legal -->
+                    <div>
+                        <h4 class="text-lg font-bold text-white mb-4">Yasal</h4>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">Gizlilik</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">
+                                    Kullanım
+                                    Şartları
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">Çerezler</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="footer-link text-white/70 hover:text-white transition-colors">KVKK</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="hidden lg:block lg:col-span-1 relative overflow-visible min-h-[200px]">
+                        <img src="image/pan1.png" alt="Tavası ve malzemeler illüstrasyonu"
+                             class="absolute right-[-30%] bottom-[-20%] object-contain z-10 select-none pointer-events-none"
+                             style="width: 650px !important; max-width: none !important; filter: drop-shadow(0 25px 40px rgba(0,0,0,.45)); transform: rotate(72deg);"
+                             loading="lazy" decoding="async" />
+                    </div>
+                </div>
+
+                <!-- Social -->
+                <!-- <div>
+                        <h4 class="text-lg font-bold text-white mb-4">Sosyal Medya</h4>
+                        <div class="flex space-x-3">
+                            <a href="#"
+                                class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                                <i class="fab fa-instagram text-white"></i>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                                <i class="fab fa-facebook text-white"></i>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                                <i class="fab fa-twitter text-white"></i>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                                <i class="fab fa-linkedin text-white"></i>
+                            </a>
+                        </div>
+                    </div> -->
+            </div>
+
+            <!-- Divider -->
+            <div class="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-8"></div>
+
+            <!-- Bottom -->
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-[#bde83a] to-[#a5c543] rounded-lg flex items-center justify-center">
+                        <i class="fas fa-utensils text-black text-sm"></i>
+                    </div>
+                    <span class="text-lg font-bold gradient-text">FoodBazaar</span>
+                </div>
+                <p class="text-white/60 text-sm">© 2025 FoodBazaar. Tüm hakları saklıdır.</p>
+
+                <!-- Sosyal Medya -->
+                <div class="flex space-x-3">
+                    <a href="#"
+                       class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                        <i class="fab fa-instagram text-white"></i>
+                    </a>
+                    <a href="#"
+                       class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                        <i class="fab fa-facebook text-white"></i>
+                    </a>
+                    <a href="#"
+                       class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                        <i class="fab fa-twitter text-white"></i>
+                    </a>
+                    <a href="#"
+                       class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                        <i class="fab fa-linkedin text-white"></i>
+                    </a>
                 </div>
             </div>
-        </footer>
 
+            <!-- Bottom
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-[#bde83a] to-[#a5c543] rounded-lg flex items-center justify-center">
+                            <i class="fas fa-utensils text-black text-sm"></i>
+                        </div>
+                        <span class="text-lg font-bold gradient-text">FoodBazaar</span>
+                    </div>
+                    <p class="text-white/60 text-sm">© 2025 FoodBazaar. Tüm hakları saklıdır.</p>
+                </div> -->
+        </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeLoginModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="glass-card max-w-md w-full p-8 modal-enter">
+                <button onclick="closeLoginModal()"
+                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-all">
+                    <i class="fas fa-times text-white"></i>
+                </button>
+
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-white mb-2">Giriş Yap</h2>
+                    <p class="text-white/70">Hesabınıza giriş yapın</p>
+                </div>
+
+                <div id="loginValidationSummary" class="validation-summary hidden">
+                    <ul id="loginValidationList" class="list-disc list-inside text-red-200 text-sm space-y-1"></ul>
+                </div>
+
+                <form id="loginForm" asp-controller="Auth" asp-action="Login" method="POST" novalidate class="space-y-6">
+                    <div>
+                        <input type="email" id="loginEmail" name="Email" placeholder="E-posta adresiniz"
+                               class="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#bde83a] transition-all"
+                               required />
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div>
+                        <input type="password" id="loginPassword" name="Password" placeholder="Şifreniz"
+                               class="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#bde83a] transition-all"
+                               required />
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center text-white/70">
+                            <input type="checkbox" name="RememberMe" class="mr-2 rounded">
+                            Beni hatırla
+                        </label>
+                        <a href="#" onclick="openForgotPasswordModal(); return false;"
+                           class="text-[#bde83a] hover:text-[#a5c543] transition-colors">Şifremi unuttum?</a>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full py-3 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button">
+                        Giriş Yap
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-white/70 text-sm">
+                        Hesabınız yok mu?
+                        <button onclick="switchToRegister()"
+                                class="text-[#bde83a] hover:text-[#a5c543] font-semibold">
+                            Kayıt Ol
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Register Modal -->
+    <div id="registerModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeRegisterModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="glass-card max-w-md w-full p-8 modal-enter">
+                <button onclick="closeRegisterModal()"
+                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-all">
+                    <i class="fas fa-times text-white"></i>
+                </button>
+
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-white mb-2">Kayıt Ol</h2>
+                    <p class="text-white/70">Yeni hesap oluşturun</p>
+                </div>
+
+                <div id="registerValidationSummary" class="validation-summary hidden">
+                    <ul id="registerValidationList" class="list-disc list-inside text-red-200 text-sm space-y-1"></ul>
+                </div>
+
+                <form id="registerForm" asp-controller="Auth" asp-action="Register" method="POST" novalidate class="space-y-6">
+                    <div>
+                        <input type="text" id="registerFullName" name="FullName" placeholder="Ad Soyad"
+                               class="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#bde83a] transition-all"
+                               required />
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div>
+                        <input type="email" id="registerEmail" name="Email" placeholder="E-posta adresiniz"
+                               class="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#bde83a] transition-all"
+                               required />
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div>
+                        <input type="password" id="registerPassword" name="Password" placeholder="Şifreniz"
+                               class="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#bde83a] transition-all"
+                               required />
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div>
+                        <input type="password" id="registerConfirmPassword" name="ConfirmPassword"
+                               placeholder="Şifrenizi tekrar girin"
+                               class="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#bde83a] transition-all"
+                               required />
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="flex items-start text-sm">
+                        <label class="flex items-start text-white/70">
+                            <input type="checkbox" name="AcceptTerms" id="registerAcceptTerms" class="mr-2 rounded mt-1"
+                                   required />
+                            <span class="text-xs">Kullanım koşullarını ve gizlilik politikasını kabul ediyorum</span>
+                        </label>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full py-3 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button">
+                        Kayıt Ol
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-white/70 text-sm">
+                        Zaten hesabınız var mı?
+                        <button onclick="switchToLogin()"
+                                class="text-[#bde83a] hover:text-[#a5c543] font-semibold">
+                            Giriş Yap
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeForgotPasswordModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="glass-card max-w-md w-full p-8 modal-enter">
+                <button onclick="closeForgotPasswordModal()"
+                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-all">
+                    <i class="fas fa-times text-white"></i>
+                </button>
+
+                <div id="forgotPasswordForm" class="space-y-6">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-[#bde83a]/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-key text-[#bde83a] text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Şifremi Unuttum</h2>
+                        <p class="text-white/70 text-sm">
+                            E-posta adresinizi girin, size şifre sıfırlama bağlantısı
+                            gönderelim
+                        </p>
+                    </div>
+                    <div>
+                        <input type="email" id="forgotEmail" placeholder="E-posta adresiniz"
+                               class="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-[#bde83a] transition-all"
+                               required />
+                        <span class="error-message" id="forgotEmailError"></span>
+                    </div>
+
+                    <button onclick="handleForgotPassword()"
+                            class="w-full py-3 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button">
+                        Gönder
+                    </button>
+
+                    <div class="text-center">
+                        <button onclick="backToLogin()"
+                                class="text-white/70 hover:text-white transition-colors text-sm">
+                            ← Giriş sayfasına dön
+                        </button>
+                    </div>
+                </div>
+
+                <div id="forgotPasswordSuccess" class="text-center space-y-6 hidden">
+                    <div class="w-16 h-16 mx-auto bg-[#bde83a]/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-[#bde83a] text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-white mb-2">E-posta Gönderildi!</h3>
+                        <p class="text-white/70 text-sm">Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.</p>
+                    </div>
+                    <button onclick="backToLogin()"
+                            class="w-full py-3 rounded-xl bg-gradient-to-r from-[#bde83a] to-[#a5c543] text-black font-bold hover:shadow-lg hover:shadow-[#bde83a]/50 transition-all shine-button">
+                        Giriş Sayfasına Dön
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="~/js/home/home.js"></script>
+    <script src="~/js/home/homeScroll.js"></script>
 </body>
+
 </html>

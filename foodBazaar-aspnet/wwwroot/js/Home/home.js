@@ -1,396 +1,398 @@
-﻿class NavigationSystem {
-    constructor() {
-        this.currentOpenDropdown = null;
-        this.isDrawerOpen = false;
-        this.focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-        this.init();
+﻿
+function openLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    clearValidationErrors('loginForm');
+}
+
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+
+    document.getElementById('loginForm').reset();
+    clearValidationErrors('loginForm');
+}
+
+function openRegisterModal() {
+    const modal = document.getElementById('registerModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    clearValidationErrors('registerForm');
+}
+
+function closeRegisterModal() {
+    const modal = document.getElementById('registerModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+
+    document.getElementById('registerForm').reset();
+    clearValidationErrors('registerForm');
+}
+
+function openForgotPasswordModal() {
+    closeLoginModal();
+    const modal = document.getElementById('forgotPasswordModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeForgotPasswordModal() {
+    const modal = document.getElementById('forgotPasswordModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+
+    document.getElementById('forgotPasswordForm').classList.remove('hidden');
+    document.getElementById('forgotPasswordSuccess').classList.add('hidden');
+    document.getElementById('forgotEmail').value = '';
+    document.getElementById('forgotEmailError').textContent = '';
+}
+
+function switchToRegister() {
+    closeLoginModal();
+    setTimeout(() => openRegisterModal(), 300);
+}
+
+function switchToLogin() {
+    closeRegisterModal();
+    setTimeout(() => openLoginModal(), 300);
+}
+
+function backToLogin() {
+    closeForgotPasswordModal();
+    setTimeout(() => openLoginModal(), 300);
+}
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePassword(password) {
+    return password.length >= 6;
+}
+
+function validatePasswordStrength(password) {
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    return re.test(password);
+}
+
+function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    const errorSpan = input.nextElementSibling;
+
+    input.classList.add('input-error');
+    if (errorSpan && errorSpan.classList.contains('error-message')) {
+        errorSpan.textContent = message;
     }
+}
 
-    init() {
-        this.setupDesktopDropdowns();
-        this.setupMobileDrawer();
-        this.setupKeyboardNavigation();
-        this.setupClickOutside();
-        this.setupEscapeKey();
+function clearError(inputId) {
+    const input = document.getElementById(inputId);
+    const errorSpan = input.nextElementSibling;
+
+    input.classList.remove('input-error');
+    if (errorSpan && errorSpan.classList.contains('error-message')) {
+        errorSpan.textContent = '';
     }
+}
 
-    setupDesktopDropdowns() {
-        const productTrigger = document.getElementById('product-trigger');
-        const productDropdown = document.getElementById('product-dropdown');
-        const companyTrigger = document.getElementById('company-trigger');
-        const companyDropdown = document.getElementById('company-dropdown');
+function clearValidationErrors(formId) {
+    const form = document.getElementById(formId);
+    const inputs = form.querySelectorAll('input');
 
-        productTrigger.addEventListener('click', (e) => {
+    inputs.forEach(input => {
+        input.classList.remove('input-error');
+    });
+
+    const errorSpans = form.querySelectorAll('.error-message');
+    errorSpans.forEach(span => {
+        span.textContent = '';
+    });
+
+    const summaryId = formId === 'loginForm' ? 'loginValidationSummary' : 'registerValidationSummary';
+    const summary = document.getElementById(summaryId);
+    if (summary) {
+        summary.classList.add('hidden');
+    }
+}
+
+function showValidationSummary(formId, errors) {
+    const summaryId = formId === 'loginForm' ? 'loginValidationSummary' : 'registerValidationSummary';
+    const listId = formId === 'loginForm' ? 'loginValidationList' : 'registerValidationList';
+
+    const summary = document.getElementById(summaryId);
+    const list = document.getElementById(listId);
+
+    list.innerHTML = '';
+    errors.forEach(error => {
+        const li = document.createElement('li');
+        li.textContent = error;
+        list.appendChild(li);
+    });
+
+    summary.classList.remove('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            e.stopPropagation();
-            this.toggleDropdown('product', productTrigger, productDropdown);
-        });
 
-        companyTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleDropdown('company', companyTrigger, companyDropdown);
-        });
+            clearValidationErrors('loginForm');
 
-        this.setupDropdownKeyboardNavigation(productDropdown);
-        this.setupDropdownKeyboardNavigation(companyDropdown);
-    }
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
 
-    toggleDropdown(dropdownName, trigger, dropdown) {
-        const isCurrentlyOpen = !dropdown.classList.contains('hidden');
+            let isValid = true;
+            const errors = [];
 
-        this.closeAllDropdowns();
-
-        if (!isCurrentlyOpen) {
-            this.openDropdown(dropdownName, trigger, dropdown);
-        }
-    }
-
-    openDropdown(dropdownName, trigger, dropdown) {
-        dropdown.classList.remove('hidden');
-        dropdown.classList.add('visible');
-        trigger.setAttribute('aria-expanded', 'true');
-        trigger.querySelector('.caret').classList.add('rotated');
-        this.currentOpenDropdown = dropdownName;
-
-        setTimeout(() => {
-            const firstFocusable = dropdown.querySelector(this.focusableElements);
-            if (firstFocusable) {
-                firstFocusable.focus();
+            if (!email) {
+                showError('loginEmail', 'E-posta adresi gereklidir');
+                errors.push('E-posta adresi gereklidir');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('loginEmail', 'Geçerli bir e-posta adresi giriniz');
+                errors.push('Geçerli bir e-posta adresi giriniz');
+                isValid = false;
             }
-        }, 50);
-    }
 
-    closeAllDropdowns() {
-        const dropdowns = [
-            { name: 'product', trigger: document.getElementById('product-trigger'), dropdown: document.getElementById('product-dropdown') },
-            { name: 'company', trigger: document.getElementById('company-trigger'), dropdown: document.getElementById('company-dropdown') }
-        ];
-
-        dropdowns.forEach(({ trigger, dropdown }) => {
-            dropdown.classList.add('hidden');
-            dropdown.classList.remove('visible');
-            trigger.setAttribute('aria-expanded', 'false');
-            trigger.querySelector('.caret').classList.remove('rotated');
-        });
-
-        this.currentOpenDropdown = null;
-    }
-
-    setupMobileDrawer() {
-        const mobileMenuTrigger = document.getElementById('mobile-menu-trigger');
-        const mobileDrawer = document.getElementById('mobile-drawer');
-        const mobileOverlay = document.getElementById('mobile-overlay');
-        const mobileCloseBtn = document.getElementById('mobile-close-btn');
-        const mobileProductTrigger = document.getElementById('mobile-product-trigger');
-        const mobileProductContent = document.getElementById('mobile-product-content');
-        const mobileCompanyTrigger = document.getElementById('mobile-company-trigger');
-        const mobileCompanyContent = document.getElementById('mobile-company-content');
-
-        mobileMenuTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.openDrawer();
-        });
-
-        mobileCloseBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.closeDrawer();
-        });
-
-        mobileOverlay.addEventListener('click', () => {
-            this.closeDrawer();
-        });
-
-        mobileProductTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.toggleMobileAccordion(mobileProductTrigger, mobileProductContent);
-        });
-
-        mobileCompanyTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.toggleMobileAccordion(mobileCompanyTrigger, mobileCompanyContent);
-        });
-    }
-
-    openDrawer() {
-        const mobileDrawer = document.getElementById('mobile-drawer');
-        const mobileOverlay = document.getElementById('mobile-overlay');
-
-        mobileDrawer.classList.remove('closed');
-        mobileDrawer.classList.add('open');
-        mobileOverlay.classList.remove('hidden');
-        mobileOverlay.classList.add('visible');
-        this.isDrawerOpen = true;
-
-        document.body.style.overflow = 'hidden';
-
-        setTimeout(() => {
-            const firstFocusable = mobileDrawer.querySelector(this.focusableElements);
-            if (firstFocusable) {
-                firstFocusable.focus();
+            if (!password) {
+                showError('loginPassword', 'Şifre gereklidir');
+                errors.push('Şifre gereklidir');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                showError('loginPassword', 'Şifre en az 6 karakter olmalıdır');
+                errors.push('Şifre en az 6 karakter olmalıdır');
+                isValid = false;
             }
-        }, 100);
-    }
 
-    closeDrawer() {
-        const mobileDrawer = document.getElementById('mobile-drawer');
-        const mobileOverlay = document.getElementById('mobile-overlay');
-
-        mobileDrawer.classList.remove('open');
-        mobileDrawer.classList.add('closed');
-        mobileOverlay.classList.remove('visible');
-        mobileOverlay.classList.add('hidden');
-        this.isDrawerOpen = false;
-
-        document.body.style.overflow = '';
-
-        document.getElementById('mobile-menu-trigger').focus();
-    }
-
-    toggleMobileAccordion(trigger, content) {
-        const isOpen = !content.classList.contains('hidden');
-        const caret = trigger.querySelector('.caret');
-
-        if (isOpen) {
-            content.classList.add('hidden');
-            trigger.setAttribute('aria-expanded', 'false');
-            caret.classList.remove('rotated');
-        } else {
-            content.classList.remove('hidden');
-            trigger.setAttribute('aria-expanded', 'true');
-            caret.classList.add('rotated');
-        }
-    }
-
-    setupKeyboardNavigation() {
-        document.addEventListener('keydown', (e) => {
-
-            if (e.key === 'Tab') {
-                this.handleTabNavigation(e);
+            if (!isValid) {
+                showValidationSummary('loginForm', errors);
+                return;
             }
-        });
-    }
 
-    setupDropdownKeyboardNavigation(dropdown) {
-        dropdown.addEventListener('keydown', (e) => {
-            const focusableElements = Array.from(dropdown.querySelectorAll(this.focusableElements));
-            const currentIndex = focusableElements.indexOf(document.activeElement);
-
-            switch (e.key) {
-                case 'ArrowDown':
-                    e.preventDefault();
-                    const nextIndex = currentIndex < focusableElements.length - 1 ? currentIndex + 1 : 0;
-                    focusableElements[nextIndex].focus();
-                    break;
-
-                case 'ArrowUp':
-                    e.preventDefault();
-                    const prevIndex = currentIndex > 0 ? currentIndex - 1 : focusableElements.length - 1;
-                    focusableElements[prevIndex].focus();
-                    break;
-
-                case 'Home':
-                    e.preventDefault();
-                    focusableElements[0].focus();
-                    break;
-
-                case 'End':
-                    e.preventDefault();
-                    focusableElements[focusableElements.length - 1].focus();
-                    break;
-            }
-        });
-    }
-
-    handleTabNavigation(e) {
-        if (this.isDrawerOpen) {
-            const drawer = document.getElementById('mobile-drawer');
-            const focusableElements = Array.from(drawer.querySelectorAll(this.focusableElements));
-            const firstFocusable = focusableElements[0];
-            const lastFocusable = focusableElements[focusableElements.length - 1];
-
-            if (e.shiftKey) {
-                // shift + tab
-                if (document.activeElement === firstFocusable) {
-                    e.preventDefault();
-                    lastFocusable.focus();
-                }
-            } else {
-                // tab
-                if (document.activeElement === lastFocusable) {
-                    e.preventDefault();
-                    firstFocusable.focus();
-                }
-            }
-        }
-    }
-
-    setupClickOutside() {
-        document.addEventListener('click', (e) => {
-            if (this.currentOpenDropdown) {
-                const productDropdown = document.getElementById('product-dropdown');
-                const companyDropdown = document.getElementById('company-dropdown');
-                const productTrigger = document.getElementById('product-trigger');
-                const companyTrigger = document.getElementById('company-trigger');
-
-                const isClickInsideProduct = productDropdown.contains(e.target) || productTrigger.contains(e.target);
-                const isClickInsideCompany = companyDropdown.contains(e.target) || companyTrigger.contains(e.target);
-
-                if (!isClickInsideProduct && !isClickInsideCompany) {
-                    this.closeAllDropdowns();
-                }
-            }
-        });
-    }
-
-    setupEscapeKey() {
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (this.isDrawerOpen) {
-                    this.closeDrawer();
-                } else if (this.currentOpenDropdown) {
-                    this.closeAllDropdowns();
-                    if (this.currentOpenDropdown === 'product') {
-                        document.getElementById('product-trigger').focus();
-                    } else if (this.currentOpenDropdown === 'company') {
-                        document.getElementById('company-trigger').focus();
+            try {
+                const formData = new FormData(loginForm);
+                const response = await fetch('/Account/Login', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    if (result.success) {
+                        window.location.href = result.redirectUrl || '/';
+                    } else {
+                        if (result.errors && result.errors.length > 0) {
+                            showValidationSummary('loginForm', result.errors);
+                        } else {
+                            showValidationSummary('loginForm', ['Giriş başarısız. Lütfen bilgilerinizi kontrol edin.']);
+                        }
+                    }
+                } else {
+                    loginForm.submit();
                 }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginForm.submit();
             }
         });
     }
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-    new NavigationSystem();
-    setupScrollAwareNavbar();
-});
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-function setupScrollAwareNavbar() {
-    const navbar = document.getElementById('navbar');
-    let lastScrollY = window.scrollY;
-    let isScrolling = false;
+            clearValidationErrors('registerForm');
 
-    function updateNavbar() {
-        const currentScrollY = window.scrollY;
+            const fullName = document.getElementById('registerFullName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const acceptTerms = document.getElementById('registerAcceptTerms').checked;
 
-        if (currentScrollY > 50) {
-            navbar.style.transform = 'translateY(0)';
-            navbar.style.opacity = '1';
-            navbar.querySelector('div > div').style.background = 'rgba(255, 255, 255, 0.35)';
-            navbar.querySelector('div > div').style.backdropFilter = 'blur(25px)';
-        } else {
+            let isValid = true;
+            const errors = [];
 
-            navbar.style.transform = 'translateY(0)';
-            navbar.style.opacity = '1';
-            navbar.querySelector('div > div').style.background = 'rgba(255, 255, 255, 0.30)';
-            navbar.querySelector('div > div').style.backdropFilter = 'blur(20px)';
-        }
-
-        lastScrollY = currentScrollY;
-        isScrolling = false;
-    }
-
-    function handleScroll() {
-        if (!isScrolling) {
-            requestAnimationFrame(updateNavbar);
-            isScrolling = true;
-        }
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    updateNavbar();
-}
-
-class NavigationUtils {
-    static debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    static throttle(func, limit) {
-        let inThrottle;
-        return function () {
-            const args = arguments;
-            const context = this;
-            if (!inThrottle) {
-                func.apply(context, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
+            if (!fullName) {
+                showError('registerFullName', 'Ad Soyad gereklidir');
+                errors.push('Ad Soyad gereklidir');
+                isValid = false;
+            } else if (fullName.length < 3) {
+                showError('registerFullName', 'Ad Soyad en az 3 karakter olmalıdır');
+                errors.push('Ad Soyad en az 3 karakter olmalıdır');
+                isValid = false;
             }
-        };
+
+            if (!email) {
+                showError('registerEmail', 'E-posta adresi gereklidir');
+                errors.push('E-posta adresi gereklidir');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('registerEmail', 'Geçerli bir e-posta adresi giriniz');
+                errors.push('Geçerli bir e-posta adresi giriniz');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('registerPassword', 'Şifre gereklidir');
+                errors.push('Şifre gereklidir');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                showError('registerPassword', 'Şifre en az 6 karakter olmalıdır');
+                errors.push('Şifre en az 6 karakter olmalıdır');
+                isValid = false;
+            } else if (!validatePasswordStrength(password)) {
+                showError('registerPassword', 'Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir');
+                errors.push('Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir');
+                isValid = false;
+            }
+
+            if (!confirmPassword) {
+                showError('registerConfirmPassword', 'Şifre tekrarı gereklidir');
+                errors.push('Şifre tekrarı gereklidir');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('registerConfirmPassword', 'Şifreler eşleşmiyor');
+                errors.push('Şifreler eşleşmiyor');
+                isValid = false;
+            }
+
+
+            if (!acceptTerms) {
+                errors.push('Kullanım koşullarını kabul etmelisiniz');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                showValidationSummary('registerForm', errors);
+                return;
+            }
+
+            try {
+                const formData = new FormData(registerForm);
+                const response = await fetch('/Account/Register', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    if (result.success) {
+                        window.location.href = result.redirectUrl || '/';
+                    } else {
+                        if (result.errors && result.errors.length > 0) {
+                            showValidationSummary('registerForm', result.errors);
+                        } else {
+                            showValidationSummary('registerForm', ['Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.']);
+                        }
+                    }
+                } else {
+                    registerForm.submit();
+                }
+            } catch (error) {
+                console.error('Register error:', error);
+                registerForm.submit();
+            }
+        });
     }
+
+    const inputs = document.querySelectorAll('input[data-val="true"]');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function () {
+            const value = this.value.trim();
+            const inputId = this.id;
+
+            clearError(inputId);
+
+            if (this.hasAttribute('data-val-required') && !value) {
+                showError(inputId, this.getAttribute('data-val-required'));
+            } else if (this.hasAttribute('data-val-email') && value && !validateEmail(value)) {
+                showError(inputId, this.getAttribute('data-val-email'));
+            } else if (this.hasAttribute('data-val-minlength')) {
+                const minLength = parseInt(this.getAttribute('minlength'));
+                if (value && value.length < minLength) {
+                    showError(inputId, this.getAttribute('data-val-minlength'));
+                }
+            } else if (this.hasAttribute('data-val-regex-pattern') && value) {
+                const pattern = new RegExp(this.getAttribute('data-val-regex-pattern'));
+                if (!pattern.test(value)) {
+                    showError(inputId, this.getAttribute('data-val-regex'));
+                }
+            } else if (this.hasAttribute('data-val-equalto-other') && value) {
+                const otherInputName = this.getAttribute('data-val-equalto-other');
+                const otherInput = document.querySelector(`input[name="${otherInputName}"]`);
+                if (otherInput && value !== otherInput.value) {
+                    showError(inputId, this.getAttribute('data-val-equalto'));
+                }
+            }
+        });
+
+        input.addEventListener('input', function () {
+            clearError(this.id);
+        });
+    });
+});
+
+function handleForgotPassword() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const errorSpan = document.getElementById('forgotEmailError');
+
+    errorSpan.textContent = '';
+    document.getElementById('forgotEmail').classList.remove('input-error');
+
+    if (!email) {
+        document.getElementById('forgotEmail').classList.add('input-error');
+        errorSpan.textContent = 'E-posta adresi gereklidir';
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        document.getElementById('forgotEmail').classList.add('input-error');
+        errorSpan.textContent = 'Geçerli bir e-posta adresi giriniz';
+        return;
+    }
+
+    setTimeout(() => {
+        document.getElementById('forgotPasswordForm').classList.add('hidden');
+        document.getElementById('forgotPasswordSuccess').classList.remove('hidden');
+    }, 500);
 }
 
-window.addEventListener('resize', NavigationUtils.debounce(() => {
-    const navigation = window.navigationSystem;
-    if (navigation && window.innerWidth >= 768 && navigation.isDrawerOpen) {
-        navigation.closeDrawer();
-    }
-}, 250));
+function handleGoogleLogin() {
+    window.location.href = '/Account/ExternalLogin?provider=Google';
+}
 
-document.addEventListener('click', (e) => {
-    if (e.target.matches('a[href^="#"]')) {
-        e.preventDefault();
-        const targetId = e.target.getAttribute('href').substring(1);
-        const targetElement = document.getElementById(targetId);
+function handleFacebookLogin() {
+    window.location.href = '/Account/ExternalLogin?provider=Facebook';
+}
 
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const forgotModal = document.getElementById('forgotPasswordModal');
+
+        if (!loginModal.classList.contains('hidden')) {
+            closeLoginModal();
+        } else if (!registerModal.classList.contains('hidden')) {
+            closeRegisterModal();
+        } else if (!forgotModal.classList.contains('hidden')) {
+            closeForgotPasswordModal();
         }
     }
 });
-
-class LoadingStates {
-    static showLoading(element) {
-        element.classList.add('opacity-50', 'pointer-events-none');
-        element.setAttribute('aria-busy', 'true');
-    }
-
-    static hideLoading(element) {
-        element.classList.remove('opacity-50', 'pointer-events-none');
-        element.setAttribute('aria-busy', 'false');
-    }
-}
-
-class AccessibilityAnnouncer {
-    constructor() {
-        this.createLiveRegion();
-    }
-
-    createLiveRegion() {
-        const liveRegion = document.createElement('div');
-        liveRegion.setAttribute('aria-live', 'polite');
-        liveRegion.setAttribute('aria-atomic', 'true');
-        liveRegion.className = 'sr-only';
-        liveRegion.id = 'live-region';
-        document.body.appendChild(liveRegion);
-    }
-
-    announce(message) {
-        const liveRegion = document.getElementById('live-region');
-        if (liveRegion) {
-            liveRegion.textContent = message;
-            setTimeout(() => {
-                liveRegion.textContent = '';
-            }, 1000);
-        }
-    }
-}
-
-const announcer = new AccessibilityAnnouncer();
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { NavigationSystem, NavigationUtils, LoadingStates, AccessibilityAnnouncer };
-}
