@@ -1,4 +1,7 @@
-﻿namespace foodBazaar_aspnet.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace foodBazaar_aspnet.Models
 {
     public class Users
     {

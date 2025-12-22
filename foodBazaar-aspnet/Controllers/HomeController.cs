@@ -27,7 +27,7 @@ namespace foodBazaar_aspnet.Controllers
                 if (User.IsInRole("Admin"))
                     return RedirectToAction("Welcome", "Home");
                 else
-                    return RedirectToAction("Index", "User");
+                    return RedirectToAction("Index", "Restaurant");
             }
 
             return View();

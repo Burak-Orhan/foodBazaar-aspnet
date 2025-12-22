@@ -1,0 +1,423 @@
+﻿@model foodBazaar_aspnet.Models.Restaurant
+@{
+    ViewData["Title"] = Model.Name + " Menüsü";
+    Layout = null; // Kendi HTML yapın olduğu için Layout'u null geçiyoruz
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="@Model.Name menüsünü inceleyin ve sipariş verin.">
+    <title>@Model.Name - FoodBazaar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <link href="~/css/Restaurant/detail.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gradient-to-b from-black via-gray-900 to-[#1B1E24] text-white overflow-x-hidden">
+
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
+        <div class="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-4">
+            <div class="relative max-w-7xl mx-auto glass-effect rounded-[28px] overflow-visible">
+                <nav class="relative flex items-center gap-4 px-6 py-3">
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <div class="w-10 h-10 bg-gradient-to-br from-[#bde83a] to-[#a5c543] rounded-xl flex items-center justify-center">
+                            <i class="fas fa-utensils text-black text-lg"></i>
+                        </div>
+                        <a href="/" class="text-xl font-bold gradient-text whitespace-nowrap">FoodBazaar</a>
+                    </div>
+
+                    <div class="flex items-center gap-3 ml-auto flex-shrink-0">
+                        <div class="relative">
+                            <button onclick="window.location.href='/Restaurant/Index'"
+                                    class="hidden sm:block px-6 py-2.5 rounded-xl bg-white/10 hover:bg-[#bde83a]/20 border border-white/20 hover:border-[#bde83a]/40 text-white font-medium transition-all focus-ring">
+                                Restoranlara Dön
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-28 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex gap-6 lg:gap-8 items-start">
+                <div class="flex-1 min-w-0 overflow-hidden">
+                    <section id="restaurantHeader" class="mb-8"></section>
+
+                    <section id="categoryFilterBar" class="mb-8"></section>
+
+                    <section id="productListContainer" class="mb-8"></section>
+                </div>
+
+                <aside id="desktopCartPanel" class="hidden lg:block flex-shrink-0">
+                    <div class="sticky top-32">
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <div id="mobileCartBar" class="hidden lg:hidden">
+        <div class="px-4 py-3">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-[#bde83a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <span class="cart-item-count-badge" id="mobileCartItemCount">0</span>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-xs text-white/60">Toplam</span>
+                        <span class="text-lg font-bold text-[#bde83a]" id="mobileCartTotal">0.00 ₺</span>
+                    </div>
+                </div>
+                <button onclick="openMobileCartModal()" class="px-6 py-3 bg-[#bde83a] hover:bg-[#a5c543] text-black font-bold rounded-lg transition-all duration-300 shine-button focus-ring ripple-effect">
+                    Sepeti Gör
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobileCartModal" role="dialog" aria-modal="true" aria-labelledby="mobileCartModalTitle">
+        <div class="modal-backdrop" onclick="closeMobileCartModal()" aria-hidden="true"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="mobileCartModalTitle" class="text-xl font-bold text-white">Sepetim</h2>
+                <button onclick="closeMobileCartModal()" class="modal-close-btn focus-ring ripple-effect">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="mobileCartModalBody"></div>
+            <div class="modal-footer" id="mobileCartModalFooter"></div>
+        </div>
+    </div>
+
+    <script>
+        // GLOBAL DEĞİŞKENLER
+        let restaurantData = {};
+        let categories = [];
+        let products = [];
+        let selectedCategory = 'all';
+        let currentSearchQuery = '';
+        let isLoading = false;
+
+        // Sepet Yapısı
+        let cart = {
+            restaurantId: null,
+            items: [],
+            subtotal: 0,
+            deliveryFee: 0,
+            total: 0
+        };
+
+        // --- SAYFA YÜKLENİNCE ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            createAriaLiveRegion();
+
+            // Yükleniyor animasyonunu başlat
+            isLoading = true;
+            showRestaurantHeaderSkeleton();
+            showProductCardsSkeleton();
+
+            // Veriyi Çek
+            await loadRestaurantData();
+
+            isLoading = false;
+
+            // Veriler geldiyse ekrana bas
+            if (restaurantData && restaurantData.name) {
+                renderRestaurantHeader(restaurantData);
+                renderCategoryFilterBar();
+                filterAndRenderProducts();
+
+                // Sepet işlemlerini başlat
+                cart.restaurantId = restaurantData.id;
+                updateCartTotals();
+                updateCart();
+                updateMobileCartBar();
+            }
+
+            initializeRippleEffects();
+            setupCategoryKeyboardNavigation();
+            setupLazyLoading();
+        });
+
+        // --- VERİ ÇEKME (FETCH) ---
+        async function loadRestaurantData() {
+            try {
+                // Controller ismin 'RestaurantController' ise bu adres doğrudur.
+                // @Model.Id sunucu tarafında ID'yi (örn: 1) basar.
+                const response = await fetch('/Restaurant/GetMenuData?restaurantId=@Model.Id');
+
+                if (!response.ok) throw new Error('Sunucudan veri alınamadı! Hata kodu: ' + response.status);
+
+                const data = await response.json();
+
+                restaurantData = data.restaurant;
+                categories = data.categories;
+                products = data.products;
+
+                // "Tümü" kategorisini ekle
+                if (!categories.find(c => c.id === 'all')) {
+                    categories.unshift({ id: 'all', name: 'Tümü', icon: 'fa-th-large' });
+                }
+
+                console.log("Veriler başarıyla yüklendi:", restaurantData);
+
+            } catch (error) {
+                console.error('Hata Detayı:', error);
+                const container = document.getElementById('productListContainer');
+                if (container) container.innerHTML = `<div class="text-center py-10 text-red-500">Veriler yüklenemedi. <br>Hata: ${error.message}</div>`;
+            }
+        }
+
+        // --- RENDER (EKRANA ÇİZME) FONKSİYONLARI ---
+
+        function renderRestaurantHeader(restaurant) {
+            const headerContainer = document.getElementById('restaurantHeader');
+            if (!headerContainer) return;
+
+            const statusText = restaurant.status === 'open' ? 'Açık' : 'Kapalı';
+            const statusClass = restaurant.status === 'open' ? 'bg-[#bde83a] text-black' : 'bg-red-500 text-white';
+
+            const cuisineTagsHTML = (restaurant.cuisineTypes || []).map(cuisine =>
+                `<span class="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-xs text-white/80">${cuisine}</span>`
+            ).join('');
+
+            headerContainer.innerHTML = `
+                 <div class="glass-card overflow-hidden">
+                     <div class="flex flex-col md:flex-row gap-6 p-6">
+                         <div class="w-full md:w-1/3 flex-shrink-0">
+                             <div class="relative aspect-video md:aspect-square rounded-xl overflow-hidden image-loading">
+                                 <img src="/${restaurant.coverImage}" alt="${restaurant.name}" class="w-full h-full object-cover" onload="handleImageLoad(this)" onerror="handleImageError(this)" />
+                             </div>
+                         </div>
+                         <div class="flex-1 flex flex-col justify-between">
+                             <div>
+                                 <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                                     <h1 class="text-2xl md:text-3xl font-bold text-white">${restaurant.name}</h1>
+                                     <span class="${statusClass} px-4 py-1.5 rounded-full text-sm font-semibold">${statusText}</span>
+                                 </div>
+                                 <div class="flex items-center gap-4 mb-4">
+                                     <div class="flex items-center gap-1.5">
+                                         <i class="fas fa-star text-[#bde83a]"></i>
+                                         <span class="text-white font-semibold">${restaurant.rating}</span>
+                                         <span class="text-white/60 text-sm">(${restaurant.reviewCount} değerlendirme)</span>
+                                     </div>
+                                 </div>
+                                 <div class="flex flex-wrap items-center gap-4 mb-4 text-sm text-white/80">
+                                     <div class="flex items-center gap-2"><i class="fas fa-clock text-[#bde83a]"></i> <span>${restaurant.deliveryTime}</span></div>
+                                     <div class="flex items-center gap-2"><i class="fas fa-wallet text-[#bde83a]"></i> <span>Min. ${restaurant.minimumOrder} ₺</span></div>
+                                 </div>
+                                 <div class="flex flex-wrap gap-2">${cuisineTagsHTML}</div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>`;
+        }
+
+        function renderCategoryFilterBar() {
+            const filterBarContainer = document.getElementById('categoryFilterBar');
+            if (!filterBarContainer) return;
+
+            const categoryChipsHTML = categories.map(category => {
+                const isActive = category.id === selectedCategory;
+                return `
+                     <button class="category-chip ${isActive ? 'active' : ''}"
+                             onclick="selectCategory('${category.id}')">
+                         <i class="fas ${category.icon}"></i>
+                         <span>${category.name}</span>
+                     </button>`;
+            }).join('');
+
+            filterBarContainer.innerHTML = `<div class="category-scroll-container">${categoryChipsHTML}</div>`;
+        }
+
+        function selectCategory(categoryId) {
+            selectedCategory = categoryId;
+            renderCategoryFilterBar();
+            filterAndRenderProducts();
+        }
+
+        function renderProducts(productsToRender) {
+            const container = document.getElementById('productListContainer');
+            if (!container) return;
+
+            if (!productsToRender || productsToRender.length === 0) {
+                container.innerHTML = `<div class="text-center py-20"><p class="text-white/70">Bu kategoride ürün bulunamadı.</p></div>`;
+                return;
+            }
+
+            const productsByCategory = {};
+            productsToRender.forEach(p => {
+                if (!productsByCategory[p.categoryId]) productsByCategory[p.categoryId] = [];
+                productsByCategory[p.categoryId].push(p);
+            });
+
+            let sectionsHTML = '';
+            for (const catId in productsByCategory) {
+                const category = categories.find(c => c.id === catId);
+                if (!category || category.id === 'all') continue;
+
+                const productsHTML = productsByCategory[catId].map(product => {
+                    const tagsHTML = (product.tags || []).map(tag =>
+                        `<span class="px-2 py-1 rounded-full text-xs font-medium" style="background-color: ${tag.color}; color: ${tag.textColor};">${tag.name}</span>`
+                    ).join('');
+
+                    const stockClass = !product.inStock ? 'opacity-50 grayscale' : '';
+                    const stockBtn = !product.inStock ? 'disabled' : '';
+
+                    return `
+                         <div class="glass-card product-card p-4 ${stockClass}">
+                             <div class="flex gap-4">
+                                 <div class="flex-1">
+                                     <h3 class="text-lg font-semibold text-white mb-2">${product.name}</h3>
+                                     <p class="text-sm text-white/70 mb-3">${product.description}</p>
+                                     ${tagsHTML ? `<div class="flex flex-wrap gap-2 mb-3">${tagsHTML}</div>` : ''}
+                                     <p class="text-xl font-bold text-[#bde83a]">${product.price} ₺</p>
+                                 </div>
+                                 <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                                     <div class="w-24 h-24 rounded-lg overflow-hidden image-loading">
+                                         <img src="/${product.image}" alt="${product.name}" class="w-full h-full object-cover" onload="handleImageLoad(this)" onerror="handleImageError(this)">
+                                     </div>
+                                     <button onclick="addToCart('${product.id}')" ${stockBtn} class="px-4 py-2 bg-[#bde83a] hover:bg-[#a5c543] text-black text-sm font-bold rounded-lg transition-all shine-button focus-ring ripple-effect">
+                                         <i class="fas fa-plus"></i>
+                                     </button>
+                                 </div>
+                             </div>
+                         </div>`;
+                }).join('');
+
+                sectionsHTML += `
+                     <div class="mb-8 category-section">
+                         <div class="flex items-center gap-3 mb-4">
+                             <i class="fas ${category.icon} text-[#bde83a] text-xl"></i>
+                             <h2 class="text-2xl font-bold text-white">${category.name}</h2>
+                         </div>
+                         <div class="grid gap-4">${productsHTML}</div>
+                     </div>`;
+            }
+            container.innerHTML = sectionsHTML;
+        }
+
+        function filterAndRenderProducts() {
+            let filtered = selectedCategory === 'all' ? products : products.filter(p => p.categoryId === selectedCategory);
+            renderProducts(filtered);
+        }
+
+        // --- SEPET İŞLEMLERİ ---
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product || !product.inStock) return;
+            const existingItem = cart.items.find(item => item.productId === productId);
+            if (existingItem) existingItem.quantity += 1;
+            else cart.items.push({ productId: product.id, name: product.name, price: product.price, quantity: 1, image: product.image });
+            updateCartSystem();
+        }
+
+        function removeFromCart(productId) {
+            const existingItem = cart.items.find(item => item.productId === productId);
+            if (!existingItem) return;
+            if (existingItem.quantity > 1) existingItem.quantity -= 1;
+            else cart.items = cart.items.filter(item => item.productId !== productId);
+            updateCartSystem();
+        }
+
+        function updateCartSystem() {
+            updateCartTotals();
+            updateCart();
+            updateMobileCartBar();
+        }
+
+        function updateCartTotals() {
+            cart.subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const minOrder = restaurantData.minimumOrder || 0;
+            cart.deliveryFee = (cart.subtotal > 0 && cart.subtotal < minOrder) ? 15 : 0;
+            cart.total = cart.subtotal + cart.deliveryFee;
+        }
+
+        function renderCartItemsHTML() {
+            return cart.items.map(item => `
+                 <div class="cart-item flex items-center gap-3 p-3 rounded-lg bg-white/5 mb-2">
+                     <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <img src="/${item.image}" class="w-full h-full object-cover">
+                     </div>
+                     <div class="flex-1 min-w-0"><h4 class="text-sm font-semibold text-white truncate">${item.name}</h4><p class="text-sm text-[#bde83a] font-bold">${item.price} ₺</p></div>
+                     <div class="flex items-center gap-2">
+                         <button onclick="removeFromCart('${item.productId}')" class="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center">-</button>
+                         <span class="text-white font-semibold text-sm w-6 text-center">${item.quantity}</span>
+                         <button onclick="addToCart('${item.productId}')" class="w-7 h-7 rounded-full bg-[#bde83a] text-black flex items-center justify-center">+</button>
+                     </div>
+                 </div>`).join('');
+        }
+
+        function updateCart() {
+            const stickyContainer = document.querySelector('#desktopCartPanel .sticky');
+            if (!stickyContainer) return;
+            if (cart.items.length === 0) {
+                stickyContainer.innerHTML = `<div class="glass-card p-6 text-center"><h2 class="text-xl font-bold text-white mb-6">Sepetim</h2><i class="fas fa-shopping-basket text-4xl text-white/40 mb-4"></i><p class="text-white/60 text-sm">Sepetiniz boş.</p></div>`;
+            } else {
+                stickyContainer.innerHTML = `<div class="glass-card cart-container"><div class="p-6 border-b border-white/10"><h2 class="text-xl font-bold text-white">Sepetim</h2></div><div class="p-4 space-y-2 max-h-96 overflow-y-auto">${renderCartItemsHTML()}</div><div class="p-6 border-t border-white/10 space-y-3"><div class="flex justify-between text-sm"><span class="text-white/70">Ara Toplam</span><span class="text-white font-semibold">${cart.subtotal.toFixed(2)} ₺</span></div><div class="flex justify-between text-sm"><span class="text-white/70">Teslimat</span><span class="text-white font-semibold">${cart.deliveryFee === 0 ? 'Ücretsiz' : cart.deliveryFee + ' ₺'}</span></div><div class="h-px bg-white/10"></div><div class="flex justify-between"><span class="text-white font-bold">Toplam</span><span class="text-[#bde83a] font-bold text-lg">${cart.total.toFixed(2)} ₺</span></div></div><div class="p-6 pt-0"><button onclick="handleCheckout()" class="w-full py-3 bg-[#bde83a] text-black font-bold rounded-lg hover:bg-[#a5c543]">Siparişi Tamamla</button></div></div>`;
+            }
+        }
+
+        function updateMobileCartBar() {
+            const bar = document.getElementById('mobileCartBar');
+            const count = document.getElementById('mobileCartItemCount');
+            const total = document.getElementById('mobileCartTotal');
+            const totalCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            count.textContent = totalCount;
+            total.textContent = `${cart.total.toFixed(2)} ₺`;
+            if (cart.items.length === 0) bar.classList.add('hidden'); else bar.classList.remove('hidden');
+        }
+
+        function openMobileCartModal() {
+            const modal = document.getElementById('mobileCartModal');
+            const body = document.getElementById('mobileCartModalBody');
+            const footer = document.getElementById('mobileCartModalFooter');
+            body.innerHTML = renderCartItemsHTML();
+            footer.innerHTML = `<div class="space-y-3 mb-4"><div class="flex justify-between"><span class="text-white font-bold">Toplam</span><span class="text-[#bde83a] font-bold text-lg">${cart.total.toFixed(2)} ₺</span></div></div><button onclick="handleCheckout()" class="w-full py-3 bg-[#bde83a] text-black font-bold rounded-lg">Siparişi Tamamla</button>`;
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileCartModal() {
+            document.getElementById('mobileCartModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function handleCheckout() { alert('Sipariş alındı! (Demo)'); }
+
+        // --- YARDIMCI VE SKELETON FONKSİYONLARI ---
+        function showRestaurantHeaderSkeleton() {
+            const h = document.getElementById('restaurantHeader');
+            if (h) h.innerHTML = `<div class="glass-card p-6"><div class="flex gap-6"><div class="skeleton w-1/3 aspect-square rounded-xl"></div><div class="flex-1 space-y-4"><div class="skeleton h-8 w-3/4 rounded"></div><div class="skeleton h-4 w-1/2 rounded"></div></div></div></div>`;
+        }
+        function showProductCardsSkeleton() {
+            const c = document.getElementById('productListContainer');
+            if (c) c.innerHTML = `<div class="grid gap-4"><div class="glass-card p-4 h-32 skeleton rounded-xl"></div><div class="glass-card p-4 h-32 skeleton rounded-xl"></div><div class="glass-card p-4 h-32 skeleton rounded-xl"></div></div>`;
+        }
+
+        // Resim Hata Yönetimi (Düzeltildi ve sadeleştirildi)
+        function handleImageLoad(img) {
+            img.parentElement.classList.add('loaded');
+        }
+
+        function handleImageError(img) {
+            img.onerror = null;
+            img.src = '/image/pattern.svg'; // DİKKAT: Burada da / olmalı
+            img.parentElement.classList.add('loaded');
+        }
+
+        // Boş fonksiyon tanımları (Hata almamak için)
+        function createAriaLiveRegion() { }
+        function initializeRippleEffects() { }
+        function setupCategoryKeyboardNavigation() { }
+        function setupLazyLoading() { }
+    </script>
+</body>
+</html>

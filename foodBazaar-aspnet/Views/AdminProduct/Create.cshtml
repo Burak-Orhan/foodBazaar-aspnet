@@ -1,0 +1,186 @@
+@model foodBazaar_aspnet.Models.Product
+
+@{
+    ViewData["Title"] = "Yeni Ürün Ekle";
+    Layout = null; // Admin Layout'un varsa burayı değiştirebilirsin
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Ürün Ekle - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center py-10 px-4">
+
+    <div class="w-full max-w-2xl bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
+
+        <div class="bg-gray-900/50 p-6 border-b border-gray-700 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-[#bde83a]">
+                <i class="fas fa-plus-circle mr-2"></i>Yeni Ürün Ekle
+            </h2>
+            <a href="/AdminProduct/Index" class="text-gray-400 hover:text-white transition">
+                <i class="fas fa-times text-xl"></i>
+            </a>
+        </div>
+
+        <div class="p-8">
+
+            <div asp-validation-summary="All" class="text-red-400 text-sm mb-6 bg-red-400/10 p-4 rounded-lg border border-red-400/20 hidden empty:hidden"></div>
+
+            <form asp-action="Create" method="post" enctype="multipart/form-data" class="space-y-6">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Restoran</label>
+                    <div class="relative">
+                        <select asp-for="RestaurantId" asp-items="ViewBag.Restaurants"
+                                class="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:border-[#bde83a] focus:ring-1 focus:ring-[#bde83a] transition appearance-none">
+                            <option value="">Restoran Seçiniz...</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Kategori</label>
+                    <div class="flex gap-3">
+                        <div class="relative flex-1">
+                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" id="categorySelect"
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-[#bde83a] focus:ring-1 focus:ring-[#bde83a] transition appearance-none">
+                                <option value="">Mevcut Kategori Seçiniz...</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400" id="selectArrow">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+
+                        <input type="text" name="NewCategoryName" id="categoryInput"
+                               class="hidden flex-1 bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:border-[#bde83a] focus:ring-1 focus:ring-[#bde83a] transition"
+                               placeholder="Yeni Kategori Adı (Örn: Çin Mutfağı)" />
+
+                        <button type="button" onclick="toggleCategoryInput()"
+                                class="bg-gray-600 hover:bg-gray-500 text-white px-4 rounded-lg font-bold transition flex items-center justify-center min-w-[50px]"
+                                title="Yeni Kategori Ekle / Listeye Dön">
+                            <i class="fas fa-plus" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 flex items-center gap-1" id="catHelpText">
+                        <i class="fas fa-info-circle"></i> Mevcut listeden bir kategori seçin.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Ürün Adı</label>
+                    <input asp-for="Name" class="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:border-[#bde83a] focus:ring-1 focus:ring-[#bde83a] transition"
+                           placeholder="Örn: Special Burger" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Açıklama</label>
+                    <textarea asp-for="Description" rows="3"
+                              class="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:border-[#bde83a] focus:ring-1 focus:ring-[#bde83a] transition"
+                              placeholder="Ürün içeriği hakkında bilgi..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Fiyat (₺)</label>
+                        <div class="relative">
+                            <input asp-for="Price" type="number" step="0.01"
+                                   class="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 pl-8 text-white placeholder-gray-400 focus:outline-none focus:border-[#bde83a] focus:ring-1 focus:ring-[#bde83a] transition" />
+                            <div class="absolute inset-y-0 left-0 flex items-center px-3 pointer-events-none text-gray-400">
+                                <i class="fas fa-lira-sign text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Menü Sırası</label>
+                        <input asp-for="SortOrder" type="number"
+                               class="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white placeholder-gray-400 focus:outline-none focus:border-[#bde83a] focus:ring-1 focus:ring-[#bde83a] transition"
+                               value="1" />
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 bg-gray-700/50 p-4 rounded-lg border border-gray-600/50">
+                    <input asp-for="InStock" type="checkbox" class="w-5 h-5 accent-[#bde83a] rounded cursor-pointer" />
+                    <label asp-for="InStock" class="text-sm font-medium text-white cursor-pointer select-none">
+                        Bu ürün stokta var ve satışa açık
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Ürün Görseli</label>
+                    <div class="flex items-center justify-center w-full">
+                        <label class="flex flex-col w-full h-32 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer hover:bg-gray-700 hover:border-gray-500 transition group">
+                            <div class="flex flex-col items-center justify-center pt-7">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 group-hover:text-[#bde83a] mb-2 transition"></i>
+                                <p class="text-sm text-gray-400 group-hover:text-gray-300">Resim seçmek için tıklayın</p>
+                            </div>
+                            <input type="file" name="ImageFile" class="opacity-0" />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4 border-t border-gray-700">
+                    <a href="/AdminProduct/Index" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-200">
+                        İptal
+                    </a>
+                    <button type="submit" class="flex-1 bg-[#bde83a] hover:bg-[#a5c543] text-black font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-[#bde83a]/20 transition duration-200 flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleCategoryInput() {
+            const select = document.getElementById('categorySelect');
+            const selectArrow = document.getElementById('selectArrow');
+            const input = document.getElementById('categoryInput');
+            const icon = document.getElementById('toggleIcon');
+            const help = document.getElementById('catHelpText');
+
+            if (input.classList.contains('hidden')) {
+                // YENİ EKLEME MODU AÇILIYOR
+                select.classList.add('hidden');
+                selectArrow.classList.add('hidden');
+
+                input.classList.remove('hidden');
+                input.focus();
+
+                // İkonu Listeye Dön yap
+                icon.className = 'fas fa-list';
+
+                // Yardımcı metni güncelle
+                help.innerHTML = '<i class="fas fa-info-circle text-[#bde83a]"></i> Yeni bir kategori oluşturulacak ve bu ürüne atanacak.';
+
+                // Backend karışmasın diye dropdown seçimini temizle
+                select.value = "";
+            } else {
+                // LİSTE MODUNA DÖNÜLÜYOR
+                select.classList.remove('hidden');
+                selectArrow.classList.remove('hidden');
+
+                input.classList.add('hidden');
+
+                // İkonu Artı yap
+                icon.className = 'fas fa-plus';
+
+                // Yardımcı metni güncelle
+                help.innerHTML = '<i class="fas fa-info-circle"></i> Mevcut listeden bir kategori seçin.';
+
+                // Inputu temizle
+                input.value = "";
+            }
+        }
+    </script>
+
+</body>
+</html>

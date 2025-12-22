@@ -1,0 +1,69 @@
+@model IEnumerable<foodBazaar_aspnet.Models.Product>
+
+@{
+    ViewData["Title"] = "Ürün Yönetimi";
+    // Layout'unu null yapıyorum, kendi admin layout'un varsa burayı değiştir.
+    Layout = null; 
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Ürünler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white p-10">
+
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-[#bde83a]">Ürün Listesi</h1>
+            <a href="/AdminProduct/Create" class="bg-[#bde83a] text-black px-4 py-2 rounded font-bold hover:bg-white transition">
+                <i class="fas fa-plus mr-2"></i>Yeni Ürün Ekle
+            </a>
+        </div>
+
+        <div class="overflow-x-auto bg-gray-800 rounded-lg shadow-xl">
+            <table class="w-full text-left">
+                <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                    <tr>
+                        <th class="p-4">Resim</th>
+                        <th class="p-4">Ürün Adı</th>
+                        <th class="p-4">Fiyat</th>
+                        <th class="p-4">Kategori</th>
+                        <th class="p-4">Restoran</th>
+                        <th class="p-4">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    @foreach (var item in Model)
+                    {
+                        <tr class="hover:bg-gray-750 transition">
+                            <td class="p-4">
+                                <img src="/@item.ImageUrl" class="w-12 h-12 object-cover rounded-lg bg-gray-600" alt="img">
+                            </td>
+                            <td class="p-4 font-bold">@item.Name</td>
+                            <td class="p-4 text-[#bde83a]">@item.Price ₺</td>
+                            <td class="p-4">
+                                <span class="bg-blue-900 text-blue-300 py-1 px-2 rounded text-xs">@item.Category?.Name</span>
+                            </td>
+                            <td class="p-4 text-gray-400">@item.Restaurant?.Name</td>
+                            <td class="p-4">
+                                <a href="/AdminProduct/Delete/@item.Id" onclick="return confirm('Silmek istediğine emin misin?')" class="text-red-400 hover:text-red-200 ml-2">
+                                    <i class="fas fa-trash"></i> Sil
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-6 text-center">
+             <a href="/" class="text-gray-500 hover:text-white">← Siteye Dön</a>
+        </div>
+    </div>
+
+</body>
+</html>

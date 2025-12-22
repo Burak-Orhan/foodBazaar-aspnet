@@ -1,16 +1,4 @@
-﻿@* @model List<foodBazaar_aspnet.Models.Users>
-@foreach (var u in Model)
-{
-    <tr>
-        <td>@u.Id</td>
-        <td>@u.Name</td>
-        <td>@u.Surname</td>
-        <td>@u.Email</td>
-        <td>@u.Password</td>
-    </tr>
-} *@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 
 <head>
@@ -58,7 +46,7 @@
 
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            <button onclick="window.location.href='/User'"
+                            <button onclick="window.location.href='/Restaurant'"
                                     class="hidden sm:block px-6 py-2.5 rounded-xl bg-white/10 hover:bg-[#bde83a]/20 border border-white/20 hover:border-[#bde83a]/40 text-white font-medium transition-all focus-ring">
                                 Restorana Git
                             </button>
