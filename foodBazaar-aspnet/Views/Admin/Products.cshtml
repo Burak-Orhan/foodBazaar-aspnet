@@ -1,0 +1,367 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Yönetimi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+        .nav-btn {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            color: #9CA3AF;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .nav-btn:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #FFFFFF;
+            }
+
+            .nav-btn.active {
+                background-color: #FFFFFF;
+                color: #111827;
+            }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <button id="mobile-menu-btn" class="md:hidden fixed top-4 left-4 z-50 bg-gray-900 text-white p-3 rounded-lg shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+    </button>
+
+    <nav id="sidebar" class="fixed left-0 top-0 h-full w-20 bg-gray-900 flex flex-col items-center py-6 gap-6 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+        <a href="/Admin" class="nav-btn"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg></a>
+        <button class="nav-btn active"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></button>
+    </nav>
+
+    <header class="fixed top-0 left-0 md:left-20 right-0 h-16 bg-white shadow-sm z-30 flex items-center justify-between px-4 md:px-8">
+        <div class="flex items-center gap-3 ml-12 md:ml-0">
+            <h1 class="text-lg md:text-xl font-semibold text-gray-900">Ürün Yönetimi</h1>
+        </div>
+    </header>
+
+    <main class="ml-0 md:ml-20 mt-16 p-4 md:p-6 min-h-screen">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm space-y-4 mb-6">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1 relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Ara..." class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black">
+                    </div>
+                    <div class="md:w-64">
+                        <select id="categoryFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black">
+                            <option value="">Tüm Kategoriler</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <span id="productCount">0 ürün</span>
+                    </div>
+                </div>
+                <button id="addProductBtn" class="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-all">
+                    <span>+ Yeni Ürün Ekle</span>
+                </button>
+            </div>
+
+            <div id="productsContainer"></div>
+        </div>
+    </main>
+
+    <script>
+        // --- DATA INITIALIZATION ---
+        // Controller'dan gelen veriyi alıyoruz
+        // NOT: Controller'da "Restaurants" listesini de gönderdiğinden emin ol!
+        const serverData = @Html.Raw(ViewBag.InitialData ?? "{ products: [], categories: [], restaurants: [] }")
+
+        // --- STATE MANAGEMENT ---
+        const productState = {
+            products: serverData.products || [],
+            categories: serverData.categories || [],
+            restaurants: serverData.restaurants || [], // YENİ: Restoranları store'a ekledik
+
+            addProduct(newProduct) {
+                this.products.unshift(newProduct);
+                renderProducts();
+            },
+
+            getProducts() { return this.products; },
+            getCategories() { return this.categories; },
+            getRestaurants() { return this.restaurants; } // YENİ: Getter metodu
+        };
+
+        // --- RENDER FUNCTIONS ---
+        let searchQuery = '';
+        let selectedCategoryId = null;
+
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            let filtered = productState.getProducts();
+
+            if (selectedCategoryId) filtered = filtered.filter(p => p.categoryId === selectedCategoryId);
+            if (searchQuery) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery) || (p.description && p.description.toLowerCase().includes(searchQuery)));
+
+            document.getElementById('productCount').innerText = `${filtered.length} ürün`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-500">Ürün bulunamadı.</div>`;
+                return;
+            }
+
+            const grouped = {};
+            filtered.forEach(p => {
+                if (!grouped[p.categoryId]) grouped[p.categoryId] = [];
+                grouped[p.categoryId].push(p);
+            });
+
+            let html = '';
+            productState.getCategories().forEach(cat => {
+                const list = grouped[cat.id];
+                if (list && list.length > 0) {
+                    html += `
+                        <div class="mb-8">
+                            <div class="flex items-center gap-3 mb-4 pb-2 border-b border-gray-100">
+                                <span class="text-2xl">${cat.icon}</span>
+                                <h3 class="text-lg font-bold">${cat.name}</h3>
+                            </div>
+                            <div class="grid gap-3">
+                                ${list.map(p => createRow(p)).join('')}
+                            </div>
+                        </div>`;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        function createRow(product) {
+            const imgSrc = product.image ? product.image : 'https://via.placeholder.com/150?text=No+Image';
+            return `
+                <div class="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                        <img src="${imgSrc}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold">${product.name}</h4>
+                        <p class="text-sm text-gray-500">${product.description || ''}</p>
+                    </div>
+                    <div class="font-bold">${product.price} ${product.currency}</div>
+                    <div class="text-xs px-2 py-1 rounded-full ${product.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        ${product.active ? 'Aktif' : 'Pasif'}
+                    </div>
+                </div>
+            `;
+        }
+
+                // Kategori Değiştirme Fonksiyonu
+        function toggleCategoryInput() {
+            const select = document.getElementById('categorySelect');
+            const input = document.getElementById('categoryInput');
+            const icon = document.getElementById('toggleIcon');
+            const help = document.getElementById('catHelpText');
+
+            if (input.classList.contains('hidden')) {
+                // YENİ EKLEME MODU
+                select.classList.add('hidden');     // Select gizle
+                select.value = "";                  // Değerini temizle ki backend karışmasın
+                select.removeAttribute('required'); // Zorunluluğu kaldır
+
+                input.classList.remove('hidden');   // Inputu göster
+                input.setAttribute('required', 'required'); // Inputu zorunlu yap
+                input.focus();
+
+                icon.innerText = "📋"; // Liste ikonu (FontAwesome yoksa emoji, varsa class değişimi)
+                // Eğer fontawesome kullanıyorsan: icon.className = 'fas fa-list';
+
+                help.innerHTML = '<span class="text-green-600">Yeni bir kategori oluşturulacak.</span>';
+            } else {
+                // LİSTE SEÇME MODU
+                select.classList.remove('hidden');
+                select.setAttribute('required', 'required');
+
+                input.classList.add('hidden');
+                input.value = ""; // Inputu temizle
+                input.removeAttribute('required');
+
+                icon.innerText = "+";
+                // Eğer fontawesome kullanıyorsan: icon.className = 'fas fa-plus';
+
+                help.innerText = 'Mevcut listeden bir kategori seçin.';
+            }
+        }
+
+        // --- MODAL & AJAX FUNCTIONS ---
+                function openAddModal() {
+            // ... Restoran options kodları aynı kalsın ...
+            const restaurantOptions = productState.getRestaurants().map(r =>
+                `<option value="${r.id}">${r.name}</option>`
+            ).join('');
+
+            // Kategori seçeneklerini hazırla
+            const categoryOptions = productState.getCategories().map(c =>
+                `<option value="${c.id}">${c.name}</option>`
+            ).join('');
+
+            const modalHtml = `
+                <div id="productModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+                        <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                            <h2 class="text-xl font-bold">Yeni Ürün Ekle</h2>
+                            <button onclick="document.getElementById('productModal').remove()" class="text-gray-400 hover:text-black">✕</button>
+                        </div>
+                        <div class="p-6">
+                            <form id="addProductForm" enctype="multipart/form-data" class="space-y-4">
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Ürün Adı</label>
+                                    <input type="text" name="Name" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-black">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Açıklama</label>
+                                    <textarea name="Description" rows="2" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-black"></textarea>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Fiyat</label>
+                                        <input type="number" name="Price" step="0.01" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-black">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Kategori</label>
+                                        <div class="flex gap-2">
+                                            <div class="relative flex-1">
+                                                <select id="categorySelect" name="CategoryId" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-black appearance-none bg-white">
+                                                    <option value="">Seçiniz</option>
+                                                    ${categoryOptions}
+                                                </select>
+
+                                                <input type="text" id="categoryInput" name="NewCategoryName" class="hidden w-full border rounded-lg p-2 focus:ring-2 focus:ring-green-500 border-green-500 placeholder-green-700" placeholder="Yeni Kategori Adı">
+                                            </div>
+
+                                            <button type="button" onclick="toggleCategoryInput()" class="px-3 bg-gray-100 hover:bg-gray-200 border rounded-lg text-gray-700 font-bold transition" title="Yeni Ekle / Seç">
+                                                <span id="toggleIcon">+</span>
+                                            </button>
+                                        </div>
+                                        <p id="catHelpText" class="text-xs text-gray-500 mt-1">Mevcut listeden bir kategori seçin.</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Restoran</label>
+                                    <select name="RestaurantId" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-black">
+                                        <option value="">Restoran Seçiniz</option>
+                                        ${restaurantOptions}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Ürün Görseli</label>
+                                    <input type="file" name="file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="p-6 border-t bg-gray-50 flex justify-end gap-3">
+                            <button onclick="document.getElementById('productModal').remove()" class="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">İptal</button>
+                            <button onclick="submitProduct()" class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800">Kaydet</button>
+                        </div>
+                    </div>
+                </div>`;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        async function submitProduct() {
+            const form = document.getElementById('addProductForm');
+            if (!form.checkValidity()) {
+                alert("Lütfen tüm zorunlu alanları doldurun.");
+                return;
+            }
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/Admin/CreateProductAjax', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    productState.addProduct(result.product);
+                    document.getElementById('productModal').remove();
+                    showToast('Ürün başarıyla eklendi', 'success');
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Sunucu hatası oluştu.');
+            }
+        }
+
+        function showToast(msg, type) {
+            const div = document.createElement('div');
+            div.className = `fixed top-5 right-5 z-[60] px-6 py-3 rounded-xl shadow-lg text-white ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+            div.innerText = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const catFilter = document.getElementById('categoryFilter');
+            productState.getCategories().forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.innerText = c.name;
+                catFilter.appendChild(opt);
+            });
+
+            catFilter.addEventListener('change', (e) => {
+                selectedCategoryId = e.target.value ? parseInt(e.target.value) : null;
+                renderProducts();
+            });
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                renderProducts();
+            });
+
+            document.getElementById('addProductBtn').addEventListener('click', openAddModal);
+
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            });
+
+            renderProducts();
+        });
+    </script>
+</body>
+</html>

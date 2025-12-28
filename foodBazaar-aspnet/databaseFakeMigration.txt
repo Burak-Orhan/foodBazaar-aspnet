@@ -1,0 +1,67 @@
+INSERT INTO Categories (Name, Slug, IconClass, SortOrder) VALUES 
+('Uzak Doðu', 'sushi', 'fa-fish', 1),        -- ID: 1
+('Kahve & Tatlý', 'coffee', 'fa-coffee', 2), -- ID: 2
+('Meksika', 'mexican', 'fa-pepper-hot', 3);  -- ID: 3
+
+-- 3. MUTFAK TÜRLERÝ
+INSERT INTO CuisineTypes (Name) VALUES 
+('Japon Mutfaðý'), -- ID: 1
+('Pastane'),       -- ID: 2
+('Latin Amerika'); -- ID: 3
+
+-- 4. ETÝKETLER (TAGS)
+INSERT INTO Tags (Name, Type, BackgroundColor, TextColor) VALUES 
+('Çið', 'raw', '#ef4444', 'white'),           -- ID: 1 (Kýrmýzý - Sushi için)
+('Vegan', 'vegan', '#10b981', 'white'),       -- ID: 2 (Yeþil)
+('Glutensiz', 'glutenfree', '#d97706', 'white'), -- ID: 3 (Turuncu)
+('Acý', 'spicy', '#b91c1c', 'white');         -- ID: 4 (Koyu Kýrmýzý)
+
+-- 5. RESTORANLARI EKLEME (3 FARKLI KONSEPT)
+-- 1. Restoran: Sushi Master (Pahalý ve Elit)
+INSERT INTO Restaurants (Name, Description, Rating, ReviewCount, DeliveryTime, MinimumOrder, Status, CoverImageUrl) 
+VALUES ('Sushi Master', 'Gerçek Japon þeflerden özel sushi deneyimi.', 4.9, 520, '45', 300.00, 'open', 'image/sushi_bg.jpg');
+
+-- 2. Restoran: Bean & Cream (Kahve Dükkaný)
+INSERT INTO Restaurants (Name, Description, Rating, ReviewCount, DeliveryTime, MinimumOrder, Status, CoverImageUrl) 
+VALUES ('Bean & Cream', 'Taze kavrulmuþ kahveler ve günlük tatlýlar.', 4.6, 890, '20', 80.00, 'open', 'image/coffee_bg.jpg');
+
+-- 3. Restoran: Los Amigos (Meksika)
+INSERT INTO Restaurants (Name, Description, Rating, ReviewCount, DeliveryTime, MinimumOrder, Status, CoverImageUrl) 
+VALUES ('Los Amigos Tacos', 'Meksika sokak lezzetleri, acý soslar.', 4.4, 210, '35', 150.00, 'closed', 'image/mexican_bg.jpg');
+
+-- 6. RESTORANLARI MUTFAKLARLA EÞLEÞTÝRME
+INSERT INTO RestaurantCuisines (RestaurantId, CuisineTypeId) VALUES 
+(1, 1), -- Sushi Master -> Japon
+(2, 2), -- Bean & Cream -> Pastane
+(3, 3); -- Los Amigos -> Latin Amerika
+
+-- 7. ÜRÜNLERÝ EKLEME
+-- === RESTORAN 1: SUSHI MASTER (ID: 1) ===
+INSERT INTO Products (Name, Description, Price, ImageUrl, InStock, SortOrder, RestaurantId, CategoryId) VALUES 
+('California Roll', 'Yengeç, avokado, salatalýk ve havyar (8 Parça)', 280.00, 'image/sushi1.jpg', 1, 1, 1, 1),
+('Somon Sashimi', 'Taze Norveç somonu dilimleri (4 Parça)', 320.00, 'image/sushi2.jpg', 1, 2, 1, 1),
+('Miso Çorbasý', 'Tofu ve taze soðanlý geleneksel çorba', 90.00, 'image/miso.jpg', 1, 3, 1, 1);
+
+-- === RESTORAN 2: BEAN & CREAM (ID: 2) ===
+INSERT INTO Products (Name, Description, Price, ImageUrl, InStock, SortOrder, RestaurantId, CategoryId) VALUES 
+('Iced Latte', 'Espresso ve soðuk sütün mükemmel uyumu', 65.00, 'image/latte.jpg', 1, 1, 2, 2),
+('San Sebastian', 'Akýþkan kývamlý, çikolata soslu cheesecake', 110.00, 'image/cake.jpg', 1, 2, 2, 2),
+('Filtre Kahve', '%100 Arabica çekirdeklerinden', 50.00, 'image/filter.jpg', 1, 3, 2, 2);
+
+-- === RESTORAN 3: LOS AMIGOS (ID: 3) ===
+INSERT INTO Products (Name, Description, Price, ImageUrl, InStock, SortOrder, RestaurantId, CategoryId) VALUES 
+('Beef Taco', 'Aðýr ateþte piþmiþ dana eti, salsa sos ve lime', 160.00, 'image/taco.jpg', 1, 1, 3, 3),
+('Nachos', 'Erimiþ cheddar, jalapeno ve kýyma ile', 140.00, 'image/nachos.jpg', 0, 2, 3, 3); -- Stokta yok
+
+-- 8. ÜRÜNLERE ETÝKET ATAMA (ProductTags)
+-- Somon Sashimi (ID: 2) -> Çið (TagID: 1)
+INSERT INTO ProductTags (ProductId, TagId) VALUES (2, 1);
+
+-- Somon Sashimi (ID: 2) -> Glutensiz (TagID: 3)
+INSERT INTO ProductTags (ProductId, TagId) VALUES (2, 3);
+
+-- Iced Latte (ID: 4) -> Vegan (TagID: 2) (Süt seçeneði varsayalým)
+INSERT INTO ProductTags (ProductId, TagId) VALUES (4, 2);
+
+-- Beef Taco (ID: 7) -> Acý (TagID: 4)
+INSERT INTO ProductTags (ProductId, TagId) VALUES (7, 4);

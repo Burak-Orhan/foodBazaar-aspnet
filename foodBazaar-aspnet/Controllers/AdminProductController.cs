@@ -31,7 +31,6 @@ namespace foodBazaar_aspnet.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            // Dropdown (Seçim Kutusu) için Kategorileri ve Restoranları hazırlıyoruz
             ViewBag.Categories = new SelectList(_context.Category, "Id", "Name");
             ViewBag.Restaurants = new SelectList(_context.Restaurant, "Id", "Name");
             

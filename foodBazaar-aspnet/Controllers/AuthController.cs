@@ -69,7 +69,7 @@ namespace foodBazaar_aspnet.Controllers
 
                 TempData["RedirectAfterLogin"] = true;
 
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("Index", "Restaurant");
             }
 
             ViewBag.Error = "Geçersiz e-posta veya şifre!";

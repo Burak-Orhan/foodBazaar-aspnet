@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using foodBazaar_aspnet.Models;
 
-namespace foodBazaar_aspnet.Controllers // Namespace eklemeyi unutma
+namespace foodBazaar_aspnet.Controllers
 {
-    // DÜZELTME 1: İsim 'Restoraunt' değil 'Restaurant' olmalı
     public class RestaurantController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,7 +14,6 @@ namespace foodBazaar_aspnet.Controllers // Namespace eklemeyi unutma
             _context = context;
         }
 
-        // GET: Restaurant/Index
         public async Task<IActionResult> Index()
         {
             var restaurants = await _context.Restaurant.ToListAsync();
@@ -24,7 +22,6 @@ namespace foodBazaar_aspnet.Controllers // Namespace eklemeyi unutma
 
         }
 
-        // GET: Restaurant/Detail/5
         public async Task<IActionResult> Detail(int id)
         {
             var restaurant = await _context.Restaurant
@@ -37,12 +34,11 @@ namespace foodBazaar_aspnet.Controllers // Namespace eklemeyi unutma
             return View(restaurant);
         }
 
-        // Bu Action JavaScript (Fetch) tarafından çağırılacak
         [HttpGet]
         public async Task<IActionResult> GetMenuData(int restaurantId)
         {
             // 1. Restoran Bilgisi
-            var restaurant = await _context.Restaurant // DÜZELTME: Restaurants
+            var restaurant = await _context.Restaurant
                 .Include(r => r.RestaurantCuisines).ThenInclude(rc => rc.CuisineType)
                 .Where(r => r.Id == restaurantId)
                 .Select(r => new
@@ -62,28 +58,23 @@ namespace foodBazaar_aspnet.Controllers // Namespace eklemeyi unutma
 
             if (restaurant == null) return NotFound();
 
-            // 2. Kategoriler
-            var categories = await _context.Category // DÜZELTME: Categories
+            var categories = await _context.Category
                 .OrderBy(c => c.SortOrder)
                 .Select(c => new
                 {
-                    // DÜZELTME 3: Modelinde 'Slug' tanımladıysan burası c.Slug olmalı.
-                    // Eğer modelinde 'Key' diye bir alan yoksa hata alırsın.
                     id = c.Slug,
                     name = c.Name,
                     icon = c.IconClass
                 })
                 .ToListAsync();
 
-            // 3. Ürünler
-            var products = await _context.Product // DÜZELTME: Products
+            var products = await _context.Product
                 .Where(p => p.RestaurantId == restaurantId)
                 .OrderBy(p => p.SortOrder)
                 .Select(p => new
                 {
                     id = "prod-" + p.Id,
                     restaurantId = "rest-" + p.RestaurantId,
-                    // DÜZELTME 3: Burada da Category.Slug kullanılmalı
                     categoryId = p.Category.Slug,
                     name = p.Name,
                     description = p.Description,
